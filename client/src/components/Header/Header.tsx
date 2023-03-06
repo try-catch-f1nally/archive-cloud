@@ -22,7 +22,7 @@ const Header: FC = () => {
       <Container>
         <LinkContainer to={'/'} className={'text-white'}>
           <Navbar.Brand className={'fs-4'}>
-            <span className={'text-primary fw-bold'}>7-Zip</span> Online
+            <span className={'text-primary fw-bold'}>Archive</span> Cloud
           </Navbar.Brand>
         </LinkContainer>
         <Navbar.Toggle />
