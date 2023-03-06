@@ -13,10 +13,12 @@ const ArchiveForm: FC = () => {
   const archiveFormats = ['zip', '7z', 'wim', 'tar', 'tar.gz', 'tar.xz', 'tar.bz2'];
   const [showPasswordField, setShowPasswordField] = useState(false);
   const validationSchema = Yup.object().shape({
-    files: Yup.array().min(1, 'Please select at least one file')
+    files: Yup.array().min(1, 'Please select at least one file'),
+    name: Yup.string().required('Please enter the name of the archive')
   });
 
   const initialValues: CreateArchiveBody = {
+    name: '',
     files: [],
     format: 'zip'
   };
@@ -61,7 +63,22 @@ const ArchiveForm: FC = () => {
               />
             ))}
           </div>
-          <h4 className={'mt-5 mb-3'}>3. Specify the password to the archive, if needed</h4>
+          <h4 className={'mt-5 mb-3'}>3. Enter the name to the archive</h4>
+          <Form.Group>
+            <InputGroup style={{width: 500}}>
+              <Form.Control
+                name={'name'}
+                value={values.name}
+                onChange={handleChange}
+                isInvalid={touched.name && !!errors.name}
+                type={'text'}
+                placeholder={'Name'}
+                required
+              />
+              <Form.Control.Feedback type={'invalid'}>{errors.name}</Form.Control.Feedback>
+            </InputGroup>
+          </Form.Group>
+          <h4 className={'mt-5 mb-3'}>4. Specify the password to the archive, if needed</h4>
           <Form.Group>
             <InputGroup style={{width: 500}}>
               <Form.Control
@@ -85,7 +102,7 @@ const ArchiveForm: FC = () => {
             </InputGroup>
           </Form.Group>
           <Button size={'lg'} type={'submit'} className={'px-5 d-block m-auto mt-5'}>
-            Save all as {values.format.toUpperCase()}
+            Upload all as {values.format.toUpperCase()}
             {isLoading && <Spinner className="ms-2" animation="border" variant="dark" size="sm" />}
           </Button>
         </Form>

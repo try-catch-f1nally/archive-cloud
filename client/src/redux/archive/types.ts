@@ -1,6 +1,7 @@
 export type ArchiveState = ArchivingProgress;
 
 export interface CreateArchiveBody {
+  name: string;
   files: Array<Blob>;
   format: string;
   password?: string;
