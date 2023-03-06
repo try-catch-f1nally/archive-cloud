@@ -5,11 +5,17 @@ interface DownloadButtonProps {
   disabled?: boolean;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
+  size?: 'sm' | 'lg';
 }
 
-const DownloadButton: FC<DownloadButtonProps> = ({onClick, disabled = false, className}) => {
+const DownloadButton: FC<DownloadButtonProps> = ({
+  onClick,
+  disabled = false,
+  className,
+  size = 'lg'
+}) => {
   return (
-    <Button size={'lg'} disabled={disabled} onClick={onClick} className={className}>
+    <Button size={size} disabled={disabled} onClick={onClick} className={className}>
       Download <i className={'bi-download'} />
     </Button>
   );
