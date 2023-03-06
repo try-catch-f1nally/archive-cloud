@@ -1,13 +1,14 @@
 import React, {FC} from 'react';
 import {Button, Container, Navbar, Spinner} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 import {useAppSelector} from '../../hooks';
 import {selectEmail, selectIsAuth} from '../../redux/auth/selectors';
 import {useLogoutMutation} from '../../redux/auth/auth-api';
 
 const Header: FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isAuth = useAppSelector(selectIsAuth);
   const email = useAppSelector(selectEmail);
   const [logout, {isLoading}] = useLogoutMutation();
@@ -25,6 +26,16 @@ const Header: FC = () => {
     await navigate('/upload');
   }
 
+  function getActiveButton() {
+    if (location.pathname === '/files') {
+      return 'files';
+    } else if (location.pathname === '/upload') {
+      return 'upload';
+    } else {
+      return '';
+    }
+  }
+
   return (
     <Navbar bg={'dark'} expand={'md'} className="fixed-top">
       <Container>
@@ -40,10 +51,18 @@ const Header: FC = () => {
               <>
                 <i className={'bi-person-fill text-light fs-4 me-1'} />
                 <span className={'text-light opacity-75 fs-5 me-3'}>{email}</span>
-                <Button className={'me-3'} variant={'outline-primary'} onClick={uploadHandler}>
+                <Button
+                  className={'me-3'}
+                  variant={getActiveButton() === 'upload' ? 'primary' : 'outline-primary'}
+                  onClick={uploadHandler}
+                >
                   Upload
                 </Button>
-                <Button className={'me-3'} variant={'outline-primary'} onClick={myFilesHandler}>
+                <Button
+                  className={'me-3'}
+                  variant={getActiveButton() === 'files' ? 'primary' : 'outline-primary'}
+                  onClick={myFilesHandler}
+                >
                   My Files
                 </Button>
 
