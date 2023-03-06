@@ -17,6 +17,14 @@ const Header: FC = () => {
     navigate('/');
   }
 
+  async function myFilesHandler() {
+    await navigate('/files');
+  }
+
+  async function uploadHandler() {
+    await navigate('/upload');
+  }
+
   return (
     <Navbar bg={'dark'} expand={'md'} className="fixed-top">
       <Container>
@@ -32,6 +40,13 @@ const Header: FC = () => {
               <>
                 <i className={'bi-person-fill text-light fs-4 me-1'} />
                 <span className={'text-light opacity-75 fs-5 me-3'}>{email}</span>
+                <Button className={'me-3'} variant={'outline-primary'} onClick={uploadHandler}>
+                  Upload
+                </Button>
+                <Button className={'me-3'} variant={'outline-primary'} onClick={myFilesHandler}>
+                  My Files
+                </Button>
+
                 <Button variant={'outline-primary'} onClick={logoutHandler} disabled={isLoading}>
                   Log Out &nbsp;
                   <i className={'bi-box-arrow-right'} />

@@ -10,7 +10,7 @@ const MainPage: FC = () => {
     return <Navigate to={'/auth'} replace />;
   }
 
-  return <Navigate to={'/archive'} replace />;
+  return <Navigate to={'/files'} replace />;
 };
 
 export default MainPage;
