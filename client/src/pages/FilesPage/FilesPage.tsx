@@ -70,7 +70,6 @@ const FilesPage: FC = () => {
       <Container>
         <section className={'pt-5'}>
           <FileContext.Provider value={{activeFile, setActiveFile}}>
-            <CommandBar />
             <FileList files={files} />
           </FileContext.Provider>
         </section>

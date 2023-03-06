@@ -1,4 +1,5 @@
 import React, {FC, useContext} from 'react';
+import {ListGroup} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import {File} from '../../pages/FilesPage/FilesPage';
 
@@ -12,16 +13,18 @@ const FileItem: FC<{
   };
 
   return (
-    <tr
+    <ListGroup.Item
+      className={'d-flex justify-content-start align-items-center'}
+      action
       onClick={() => {
         isActive ? setActiveFile(null) : setActiveFile(file);
       }}
-      style={isActive ? activeStyle : {}}
+      style={{height: 50, backgroundColor: isActive ? '#e8f0fe' : 'white'}}
     >
-      <td>{file.name}</td>
-      <td>{file.date}</td>
-      <td>{file.size}</td>
-    </tr>
+      <span style={{width: 500}}>{file.name}</span>
+      <span style={{width: 200}}>{file.date}</span>
+      <span style={{width: 200}}>{file.size}</span>
+    </ListGroup.Item>
   );
 };
 
