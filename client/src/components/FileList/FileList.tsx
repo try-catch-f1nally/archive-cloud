@@ -1,5 +1,5 @@
 import React, {FC, useContext} from 'react';
-import {Card, ListGroup} from 'react-bootstrap';
+import {Card, ListGroup, Spinner} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import FileItem from './FileItem';
 import {File} from '../../redux/storage/types';
@@ -14,7 +14,13 @@ const FileList: FC = () => {
   let content;
 
   if (isLoading || isFetching) {
-    content = <div>Loading...</div>;
+    content = (
+      <div className="d-flex justify-content-center">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    );
   }
 
   if (isSuccess && files) {
