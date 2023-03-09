@@ -2,7 +2,7 @@ import React, {FC, useContext} from 'react';
 import {Card} from 'react-bootstrap';
 import DeleteButton from '../DeleteButton/DeleteButton';
 import DownloadButton from '../DownloadButton/DownloadButton';
-import {File} from '../../pages/FilesPage/FilesPage';
+import {File} from '../../redux/storage/types';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 
 const CommandBar: FC = () => {

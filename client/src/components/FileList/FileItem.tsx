@@ -3,7 +3,7 @@ import {ListGroup} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import DownloadButton from '../DownloadButton/DownloadButton';
 import DeleteButton from '../DeleteButton/DeleteButton';
-import {File} from '../../pages/FilesPage/FilesPage';
+import {File} from '../../redux/storage/types';
 
 const FileItem: FC<{
   file: File;
@@ -28,7 +28,13 @@ const FileItem: FC<{
       <span style={{width: 200}}>{file.size}</span>
       {isActive && (
         <div className="d-flex flex-grow-1 justify-content-end">
-          <DownloadButton onClick={() => {}} size={'sm'} className={'me-3'} />
+          <DownloadButton
+            onClick={() => {
+              window.location.href = file.link;
+            }}
+            size={'sm'}
+            className={'me-3'}
+          />
           <DeleteButton onClick={() => {}} size={'sm'} />
         </div>
       )}
