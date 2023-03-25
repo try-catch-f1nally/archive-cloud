@@ -13,7 +13,7 @@ export type UserData = {
 export type LoginData = {
   email: string;
   password: string;
-}
+};
 
 export type RegisterData = {
   email: string;
