@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config({path: '.env.dev'});
 import {Config} from './types/config.interface';
 
 export const config: Config = {
