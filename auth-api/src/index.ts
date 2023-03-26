@@ -1,5 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config({path: '.env.dev'});
 import {Application, Log4jsService, AjvService} from '@try-catch-f1nally/express-microservice';
 import {config} from './config/config';
 import UserModel from './user/user.model';
