@@ -1,15 +1,15 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {ArchiveState} from './types';
-import {archiveApi} from './archive-api';
+import {uploadApi} from './upload-api';
 
 const initialState: ArchiveState = {};
 
-export const archiveSlice = createSlice({
+export const uploadSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addMatcher(archiveApi.endpoints.getProgress.matchFulfilled, (state, {payload}) => {
+    builder.addMatcher(uploadApi.endpoints.getProgress.matchFulfilled, (state, {payload}) => {
       state.status = payload.status;
       state.percentage = payload.percentage;
       state.errorMessage = payload.errorMessage;
@@ -17,4 +17,4 @@ export const archiveSlice = createSlice({
   }
 });
 
-export default archiveSlice.reducer;
+export default uploadSlice.reducer;

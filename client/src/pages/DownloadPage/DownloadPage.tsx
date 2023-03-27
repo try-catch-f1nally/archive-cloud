@@ -5,7 +5,7 @@ import {Container} from 'react-bootstrap';
 import {useAppSelector} from '../../hooks';
 import {selectIsAuth, selectToken} from '../../redux/auth/selectors';
 import {Navigate} from 'react-router-dom';
-import {useGetProgressQuery} from '../../redux/archive/archive-api';
+import {useGetProgressQuery} from '../../redux/upload/upload-api';
 const DownloadPage: FC = () => {
   const [pollingInterval, setPollingInterval] = useState<number | undefined>(300);
   const [percentage, setPercentage] = useState<number>(0);
@@ -32,7 +32,7 @@ const DownloadPage: FC = () => {
 
   const accessToken = useAppSelector(selectToken);
   const downloadArchive = async () => {
-    const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/archives/download`, {
+    const response = await fetch(`${process.env.UPLOAD_API_URL}/archives/download`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

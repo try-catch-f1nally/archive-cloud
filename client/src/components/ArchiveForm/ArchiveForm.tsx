@@ -4,8 +4,8 @@ import DropzoneBox from '../DropzoneBox/DropzoneBox';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
 import {useNavigate} from 'react-router-dom';
-import {useCreateMutation} from '../../redux/archive/archive-api';
-import {CreateArchiveBody} from '../../redux/archive/types';
+import {useCreateMutation} from '../../redux/upload/upload-api';
+import {CreateArchiveBody} from '../../redux/upload/types';
 
 const ArchiveForm: FC = () => {
   const navigate = useNavigate();

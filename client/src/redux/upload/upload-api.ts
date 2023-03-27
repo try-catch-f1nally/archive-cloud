@@ -3,10 +3,10 @@ import {ArchivingProgress} from './types';
 import {authFetchBaseQuery} from '../auth/authFetchBaseQuery';
 
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-const baseUrl = `${process.env.REACT_APP_SERVER_API_URL}/archives`;
+const baseUrl = `${process.env.REACT_APP_UPLOAD_API_URL}/`;
 
-export const archiveApi = createApi({
-  reducerPath: 'api/archives',
+export const uploadApi = createApi({
+  reducerPath: 'api/upload',
   baseQuery: authFetchBaseQuery({baseUrl, credentials: 'include'}) as BaseQueryFn<
     string | FetchArgs,
     unknown,
@@ -15,18 +15,19 @@ export const archiveApi = createApi({
   endpoints: (builder) => ({
     create: builder.mutation<void, FormData>({
       query: (body) => ({
-        url: '',
+        url: 'upload',
         method: 'POST',
         body
       })
     }),
     getProgress: builder.query<ArchivingProgress, void>({
       query: () => ({
-        url: 'progress'
+        url: 'upload/progress',
+        method: 'POST'
       })
     })
   })
 });
 
-export const {useCreateMutation, useGetProgressQuery} = archiveApi;
-export default archiveApi.reducer;
+export const {useCreateMutation, useGetProgressQuery} = uploadApi;
+export default uploadApi.reducer;

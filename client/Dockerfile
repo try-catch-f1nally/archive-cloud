@@ -6,7 +6,8 @@ COPY tsconfig.json .
 COPY src src
 COPY public public
 ENV NODE_ENV=production
-ENV REACT_APP_SERVER_API_URL="http://localhost:8080/api"
+ENV AUTH_API_URL="hhttp://localhost:3001"
+ENV UPLOAD_API_URL="http://localhost:3002"
 RUN npm run build
 
 FROM nginx:1.22-alpine AS production

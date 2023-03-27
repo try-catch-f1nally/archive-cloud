@@ -1,8 +1,8 @@
 import {configureStore} from '@reduxjs/toolkit';
 import authReducer from './auth/slice';
-import archiveReducer from './archive/slice';
+import archiveReducer from './upload/slice';
 import {authApi} from './auth/auth-api';
-import {archiveApi} from './archive/archive-api';
+import {uploadApi} from './upload/upload-api';
 import {storageApi} from './storage/storage-api';
 
 export const store = configureStore({
@@ -10,11 +10,11 @@ export const store = configureStore({
     auth: authReducer,
     archive: archiveReducer,
     [authApi.reducerPath]: authApi.reducer,
-    [archiveApi.reducerPath]: archiveApi.reducer,
+    [uploadApi.reducerPath]: uploadApi.reducer,
     [storageApi.reducerPath]: storageApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, archiveApi.middleware, storageApi.middleware)
+    getDefaultMiddleware().concat(authApi.middleware, uploadApi.middleware, storageApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

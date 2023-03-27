@@ -26,7 +26,7 @@ export const authFetchBaseQuery: AuthFetchBaseQueryType = (options) => {
       const baseQueryWithCredentials = fetchBaseQuery({credentials: 'include'});
       const response = await baseQueryWithCredentials(
         {
-          url: `${process.env.REACT_APP_SERVER_API_URL}/auth/refresh`,
+          url: `${process.env.REACT_APP_AUTH_API_URL}/refresh`,
           method: 'POST'
         },
         api,
