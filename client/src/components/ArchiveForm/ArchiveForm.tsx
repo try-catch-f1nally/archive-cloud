@@ -14,7 +14,14 @@ const ArchiveForm: FC = () => {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const validationSchema = Yup.object().shape({
     files: Yup.array().min(1, 'Please select at least one file'),
-    name: Yup.string().required('Please enter the name of the archive')
+    name: Yup.string()
+      .required('Please enter the name of the archive')
+      .min(3, 'Too short')
+      .max(20, 'Too long')
+      .matches(
+        /^[A-Za-z0-9-_]+$/,
+        'Only latin letters, numbers, dashes and underscores are allowed'
+      )
   });
 
   const initialValues: CreateArchiveBody = {
