@@ -16,5 +16,6 @@ const mongoDb = new MongoDB(config, log4jsService.getLogger('MongoDB'));
 new Application({
   controllers: [authController],
   logger: log4jsService.getLogger('Application'),
-  database: mongoDb
+  database: mongoDb,
+  config
 }).start();

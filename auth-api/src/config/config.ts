@@ -3,6 +3,7 @@ dotenv.config({path: '.env.dev'});
 import {Config} from './types/config.interface';
 
 export const config: Config = {
+  port: parseInt(process.env.PORT!),
   dbUri: process.env.DB_URI!,
   auth: {
     publicKey: process.env.AUTH_PUBLIC_KEY!,
@@ -10,5 +11,9 @@ export const config: Config = {
     refreshSecret: process.env.JWT_SECRET!,
     accessTokenTtlInSeconds: 30 * 60,
     refreshTokenTtlInSeconds: 30 * 24 * 60 * 60
+  },
+  cors: {
+    origin: process.env.FRONTEND_ORIGIN!,
+    credentials: true
   }
 };

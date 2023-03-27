@@ -23,5 +23,6 @@ const uploadController = new UploadController(config, uploadService, uploadValid
 new Application({
   controllers: [uploadController],
   logger: log4jsService.getLogger('Application'),
-  database: mongoDb
+  database: mongoDb,
+  config
 }).start();
