@@ -18,12 +18,12 @@ export default class UploadValidatorImpl implements UploadValidator {
         name: {
           type: 'string',
           format: 'regex',
-          pattern: '^[A-Za-z-_]+$',
+          pattern: '^[A-Za-z0-9-_]+$',
           minLength: 3,
           maxLength: 20,
           errorMessage: {
             type: 'archive name must be type of string',
-            regex: 'archive name must include Latin letters and "-", "_" signs only',
+            pattern: 'archive name must include Latin letters, digits and "-", "_" signs only',
             minLength: 'archive name must not be longer than 20 characters',
             maxLength: 'archive name must not be shorter than 3 characters'
           }
