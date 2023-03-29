@@ -8,7 +8,7 @@ export interface CreateArchiveBody {
 }
 
 export interface ArchivingProgress {
-  status?: 'process' | 'success' | 'error';
+  status: 'process' | 'success' | 'error';
   percentage?: number;
   errorMessage?: string;
 }

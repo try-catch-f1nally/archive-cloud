@@ -1,11 +1,8 @@
 import {BaseQueryFn, createApi, FetchArgs, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {AuthResponse, SignupBody, LoginBody} from './types';
 
-console.log('process.env.AUTH_API_URL', process.env.REACT_APP_AUTH_API_URL);
-console.log('process.env.UPLOAD_API_URL', process.env.REACT_APP_UPLOAD_API_URL);
-
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-const baseUrl = `${process.env.REACT_APP_AUTH_API_URL}/`;
+const baseUrl = process.env.REACT_APP_AUTH_API_URL;
 
 export const authApi = createApi({
   reducerPath: 'api/auth',
