@@ -2,7 +2,9 @@ import {createSlice} from '@reduxjs/toolkit';
 import {ArchiveState} from './types';
 import {uploadApi} from './upload-api';
 
-const initialState: ArchiveState = {};
+const initialState: ArchiveState = {
+  status: 'process'
+};
 
 export const uploadSlice = createSlice({
   name: 'auth',
