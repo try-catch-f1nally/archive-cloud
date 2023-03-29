@@ -3,7 +3,7 @@ import {authFetchBaseQuery} from '../auth/authFetchBaseQuery';
 import {File} from './types';
 
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-const baseUrl = `http://localhost:8000/archives`;
+const baseUrl = process.env.REACT_APP_STORAGE_API_URL;
 
 export const storageApi = createApi({
   reducerPath: 'api/storage',
