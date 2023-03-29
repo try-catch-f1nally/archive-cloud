@@ -8,7 +8,7 @@ import LogInForm from './components/LogInForm/LogInForm';
 import SignUpForm from './components/SignUpForm/SignUpForm';
 import ArchivePage from './pages/ArchivePage/ArchivePage';
 import FilesPage from './pages/FilesPage/FilesPage';
-import DownloadPage from './pages/DownloadPage/DownloadPage';
+import UploadPage from './pages/UploadPage/UploadPage';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
 
 const App = () => {
@@ -16,7 +16,7 @@ const App = () => {
     <Routes>
       <Route path={'/'} element={<Layout />}>
         <Route index element={<MainPage />} />
-        <Route path={'/download'} element={<DownloadPage />} />
+        <Route path={'/uploading'} element={<UploadPage />} />
         <Route path={'/upload'} element={<ArchivePage />} />
         <Route path={'/files'} element={<FilesPage />} />
         <Route path={'/auth'} element={<AuthPage />}>

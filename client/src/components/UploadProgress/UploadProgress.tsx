@@ -1,18 +1,18 @@
 import React, {FC} from 'react';
 import {ProgressBar} from 'react-bootstrap';
 
-interface DownloadProgressProps {
+interface UploadProgressProps {
   animated: boolean;
   percentage: number;
 }
 
-const DownloadProgress: FC<DownloadProgressProps> = ({percentage, animated}) => {
+const UploadProgress: FC<UploadProgressProps> = ({percentage, animated}) => {
   return (
     <div>
-      <h3>Downloading {percentage}%</h3>
+      <h3>Uploading {percentage}%</h3>
       <ProgressBar striped={animated} animated={animated} now={percentage} />
     </div>
   );
 };
 
-export default DownloadProgress;
+export default UploadProgress;

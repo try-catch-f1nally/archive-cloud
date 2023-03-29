@@ -39,7 +39,7 @@ const ArchiveForm: FC = () => {
     }
     values.files.forEach((file) => formData.append('files[]', file));
     await create(formData);
-    navigate('/download');
+    navigate('/uploading');
   }
 
   return (

@@ -1,12 +1,13 @@
 import React, {FC, useEffect, useState} from 'react';
-import DownloadProgress from '../../components/DownloadProgress/DownloadProgress';
-import DownloadButton from '../../components/DownloadButton/DownloadButton';
-import {Container} from 'react-bootstrap';
+import {useNavigate} from 'react-router-dom';
+import UploadProgress from '../../components/UploadProgress/UploadProgress';
+import {Container, Button} from 'react-bootstrap';
 import {useAppSelector} from '../../hooks';
 import {selectIsAuth, selectToken} from '../../redux/auth/selectors';
 import {Navigate} from 'react-router-dom';
 import {useGetProgressQuery} from '../../redux/upload/upload-api';
-const DownloadPage: FC = () => {
+const UploadPage: FC = () => {
+  const navigate = useNavigate();
   const [pollingInterval, setPollingInterval] = useState<number | undefined>(300);
   const [percentage, setPercentage] = useState<number>(0);
   const [status, setStatus] = useState<string | undefined>();
@@ -31,16 +32,6 @@ const DownloadPage: FC = () => {
   }, [data]);
 
   const accessToken = useAppSelector(selectToken);
-  const downloadArchive = async () => {
-    const response = await fetch(`${process.env.UPLOAD_API_URL}/archives/download`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
-    const blob = await response.blob();
-    const file = window.URL.createObjectURL(blob);
-    window.location.assign(file);
-  };
 
   const isAuth = useAppSelector(selectIsAuth);
   if (!isAuth) {
@@ -51,13 +42,21 @@ const DownloadPage: FC = () => {
     <main>
       <Container>
         <div className={'p-5 mb-2'}>
-          <DownloadProgress percentage={percentage} animated={!isSuccess} />
+          <UploadProgress percentage={percentage} animated={!isSuccess} />
         </div>
         <div className={'d-flex justify-content-center'}>
-          <DownloadButton onClick={downloadArchive} disabled={!isSuccess} />
+          <Button
+            size={'lg'}
+            disabled={!isSuccess}
+            onClick={() => {
+              navigate('/files');
+            }}
+          >
+            To my files
+          </Button>
         </div>
       </Container>
     </main>
   );
 };
-export default DownloadPage;
+export default UploadPage;
