@@ -18,12 +18,12 @@ const Header: FC = () => {
     navigate('/');
   }
 
-  async function myFilesHandler() {
-    await navigate('/files');
+  function myFilesHandler() {
+    navigate('/files');
   }
 
-  async function uploadHandler() {
-    await navigate('/upload');
+  function uploadHandler() {
+    navigate('/upload');
   }
 
   function getActiveButton() {
@@ -56,14 +56,16 @@ const Header: FC = () => {
                   variant={getActiveButton() === 'upload' ? 'primary' : 'outline-primary'}
                   onClick={uploadHandler}
                 >
-                  Upload
+                  Upload &nbsp;
+                  <i className={'bi-upload'} />
                 </Button>
                 <Button
                   className={'me-3'}
                   variant={getActiveButton() === 'files' ? 'primary' : 'outline-primary'}
                   onClick={myFilesHandler}
                 >
-                  My Files
+                  My Files &nbsp;
+                  <i className={'bi-folder'} />
                 </Button>
 
                 <Button variant={'outline-primary'} onClick={logoutHandler} disabled={isLoading}>
