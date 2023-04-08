@@ -5,8 +5,8 @@ export default interface Config extends DefaultConfig {
   port: number;
   mongodb: {
     uri: string;
-    connectionOptions?: mongoose.ConnectOptions
-  }
+    connectionOptions?: mongoose.ConnectOptions;
+  };
   auth: {
     publicKey: string;
     privateKey: string;
