@@ -30,10 +30,9 @@
   },
   "homepage": "https://github.com/try-catch-f1nally/arhive-cloud-upload-api#readme",
   "devDependencies": {
-    "@types/mongoose": "^5.11.97",
-    "@types/multer": "^1.4.7",
-    "@types/node": "^18.14.1",
-    "@types/node-7z": "^2.1.5",
+    "@types/multer": "~1.4.7",
+    "@types/node": "~18.14.1",
+    "@types/node-7z": "~2.1.5",
     "@typescript-eslint/eslint-plugin": "~5.46.0",
     "@typescript-eslint/parser": "~5.46.0",
     "editorconfig-checker": "~4.0.2",
@@ -49,11 +48,11 @@
     "typescript": "~4.9.4"
   },
   "dependencies": {
-    "@try-catch-f1nally/express-microservice": "^1.1.0",
-    "7zip-bin": "^5.2.0",
-    "dotenv": "^16.0.3",
-    "mongoose": "^7.0.2",
-    "multer": "^1.4.5-lts.1",
-    "node-7z": "^3.0.0"
+    "@try-catch-f1nally/express-microservice": "~1.2.1",
+    "7zip-bin": "~5.2.0",
+    "dotenv": "~16.0.3",
+    "ioredis": "~5.3.1",
+    "multer": "~1.4.5-lts.1",
+    "node-7z": "~3.0.0"
   }
 }

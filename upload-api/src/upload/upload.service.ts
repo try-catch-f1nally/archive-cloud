@@ -1,25 +1,23 @@
 import path from 'path';
 import fs from 'fs/promises';
+import http from 'http';
 import {path7za} from '7zip-bin';
 import node7z from 'node-7z';
 import {BadRequestError, Logger} from '@try-catch-f1nally/express-microservice';
-import {Config} from '../config/types/config.interface';
+import Config from '../config/types/config.interface';
 import UploadService from './types/upload.service.interface';
-import UploadModel from './types/upload.model.interface';
-import {UploadOptions} from './types/upload.types';
-import ArchiveModel from '../archive/types/archive.model.interface';
+import {UploadingStatus, UploadOptions} from './types/upload.types';
+import {RedisClient} from '../redis';
 
 export default class UploadServiceImpl implements UploadService {
   private _config: Config;
   private _logger: Logger;
-  private _uploadModel: UploadModel;
-  private _archiveModel: ArchiveModel;
+  private _redisClient: RedisClient;
 
-  constructor(config: Config, logger: Logger, uploadModel: UploadModel, archiveModel: ArchiveModel) {
+  constructor(config: Config, logger: Logger, redisClient: RedisClient) {
     this._config = config;
     this._logger = logger;
-    this._uploadModel = uploadModel;
-    this._archiveModel = archiveModel;
+    this._redisClient = redisClient;
   }
 
   getUserUploadDir(userId: string) {
@@ -28,13 +26,11 @@ export default class UploadServiceImpl implements UploadService {
 
   async prepareUserUploadDir(userId: string) {
     const userDir = this.getUserUploadDir(userId);
-    try {
-      await fs.rm(userDir, {recursive: true});
-    } catch (error) {
+    await fs.rm(userDir, {recursive: true}).catch((error) => {
       if (error instanceof Object && 'code' in error && error.code === 'EBUSY') {
         throw new BadRequestError('Please wait for the completion of your previous upload request');
       }
-    }
+    });
     await fs.mkdir(userDir, {recursive: true});
   }
 
@@ -43,72 +39,74 @@ export default class UploadServiceImpl implements UploadService {
     const [archiveType, compressionExt] = format.split('.');
     const withCompression = !!compressionExt;
     const destDir = path.join(this._config.storage.path, userId);
-    const archive = `${destDir}${path.sep}${name}.${archiveType}`;
-    const compressedArchive = `${destDir}${path.sep}${name}.${format}`;
+    const archiveNameWithoutCompression = `${destDir}${path.sep}${name}.${archiveType}`;
+    const archiveName = `${destDir}${path.sep}${name}.${format}`;
     const source = `${userDir}${path.sep}*.*`;
     const zipOptions = {
       $bin: path7za,
-      $progress: true,
       recursive: true,
       password,
       method: password && format === '7z' ? ['he'] : []
     };
-    const upload = await this._uploadModel.create({
-      userId,
-      name,
-      withCompression,
-      status: 'process',
-      archivingProgress: 0,
-      compressionProgress: 0,
-      createdAt: new Date()
-    });
 
-    const finishUpload = async () => {
-      upload.status = 'success';
-      await upload.save();
-      await this._archiveModel.create({
-        userId,
-        name,
-        sizeInBytes: (await fs.stat(compressedArchive)).size,
-        createdAt: new Date()
-      });
+    const redisKey = `${userId}:${archiveName}`;
+    const redisKeyTtl = 4 * 60 * 60;
+    await this._redisClient.set(redisKey, 'process', 'EX', redisKeyTtl);
+
+    const handleEnd = async () => {
+      try {
+        await fs.rm(userDir, {recursive: true, force: true});
+        await this._notifyStorageApiService(userId, archiveName);
+        await this._redisClient.set(redisKey, 'success', 'EX', redisKeyTtl);
+      } catch (error) {
+        this._logger.error('Failed to handle "end" event on creating/compressing archive', error);
+      }
+    };
+
+    const handleError = async (error: unknown, message: string) => {
+      try {
+        this._logger.debug(message, error);
+        await this._redisClient.set(redisKey, 'error', 'EX', redisKeyTtl);
+        await fs.rm(userDir, {recursive: true, force: true});
+      } catch (error) {
+        this._logger.error('Failed to handle "error" event on creating/compressing archive', error);
+      }
     };
 
     const runCompressing = () =>
       node7z
-        .add(compressedArchive, archive, zipOptions)
-        .on('progress', async ({percent}) => {
-          upload.compressionProgress = percent;
-          await upload.save();
-        })
-        .on('error', async (error: unknown) => {
-          upload.status = 'error';
-          await upload.save();
-          this._logger.debug(`Error on creating archive ${compressedArchive}`, error);
-          await fs.rm(userDir, {recursive: true, force: true});
-        })
-        .on('end', () => finishUpload());
+        .add(archiveName, archiveNameWithoutCompression, zipOptions)
+        .on('error', async (error: unknown) => handleError(error, `Error on compressing ${archiveName}`))
+        .on('end', () => handleEnd());
 
     node7z
-      .add(archive, source, zipOptions)
-      .on('progress', async ({percent}) => {
-        upload.archivingProgress = percent;
-        await upload.save();
-      })
-      .on('error', async (error: unknown) => {
-        upload.status = 'error';
-        await upload.save();
-        this._logger.debug(`Error on creating archive ${archive}`, error);
-        await fs.rm(userDir, {recursive: true, force: true});
-      })
-      .on('end', () => (withCompression ? runCompressing() : finishUpload()));
+      .add(archiveNameWithoutCompression, source, zipOptions)
+      .on('error', async (error: unknown) => handleError(error, `Error on creating ${archiveNameWithoutCompression}`))
+      .on('end', () => (withCompression ? runCompressing() : handleEnd()));
   }
 
-  async getUploadingProgress(userId: string) {
-    const upload = await this._uploadModel.findOne({userId});
-    if (!upload) {
-      throw new BadRequestError('There are no uploads for this user');
+  // TODO: replace http request with rabbitmq event
+  _notifyStorageApiService(userId: string, archiveName: string) {
+    const data = JSON.stringify({userId, archiveName});
+    const req = http.request(this._config['storage-api'].url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
+    });
+    return new Promise((resolve, reject) => {
+      req.on('error', reject).on('close', resolve);
+      req.write(data);
+      req.end();
+    });
+  }
+
+  async getUploadingStatus(userId: string) {
+    const status = await this._redisClient.get(userId);
+    if (!status) {
+      throw new BadRequestError('No uploads found');
     }
-    return upload.getProgress();
+    return status as UploadingStatus;
   }
 }

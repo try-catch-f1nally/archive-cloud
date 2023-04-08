@@ -8,19 +8,4 @@ export type UploadOptions = {
   password?: string;
 };
 
-export type UploadingProgress = StatusProcess | StatusSuccess | StatusError;
-export type UploadingStatus = UploadingProgress['status'];
-
-type StatusProcess = {
-  status: 'process';
-  percentage: number;
-};
-
-type StatusError = {
-  status: 'error';
-  errorMessage: string;
-};
-
-type StatusSuccess = {
-  status: 'success';
-};
+export type UploadingStatus = 'process' | 'success' | 'error';

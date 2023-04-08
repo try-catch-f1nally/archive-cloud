@@ -1,3 +1,4 @@
+import multer, {MulterError} from 'multer';
 import {
   Controller,
   Router,
@@ -7,10 +8,9 @@ import {
   BadRequestError,
   Middleware
 } from '@try-catch-f1nally/express-microservice';
-import {Config} from '../config/types/config.interface';
+import Config from '../config/types/config.interface';
 import UploadService from './types/upload.service.interface';
 import UploadValidator from './types/upload.validator.interface';
-import multer, {MulterError} from 'multer';
 
 export default class UploadController implements Controller {
   private _router = Router();
@@ -45,7 +45,7 @@ export default class UploadController implements Controller {
       this._uploadErrorHandler.bind(this),
       this._upload.bind(this)
     );
-    this.router.post('/upload/progress', this._authMiddleware.middleware);
+    this.router.post('/upload/status', this._authMiddleware.middleware, this._getUploadingStatus.bind(this));
   }
 
   private async _prepareUserDirMiddleware(req: Request, res: Response, next: NextFunction) {
@@ -60,7 +60,7 @@ export default class UploadController implements Controller {
   private _uploadMiddleware(req: Request, res: Response, next: NextFunction) {
     const userId = req.user!.id;
     return multer({
-      limits: {fileSize: this._config.storage.fileSizeLimit},
+      limits: {fileSize: this._config.upload.fileSizeLimit},
       storage: multer.diskStorage({
         destination: (req, file, callback) => {
           callback(null, this._uploadService.getUserUploadDir(userId));
@@ -72,7 +72,7 @@ export default class UploadController implements Controller {
 
   private _uploadErrorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
     if (err instanceof MulterError && err.code === 'LIMIT_FILE_SIZE') {
-      const {fileSizeLimit} = this._config.storage;
+      const {fileSizeLimit} = this._config.upload;
       let fileSizeLimitString;
       if (fileSizeLimit > 1024 ** 3) {
         fileSizeLimitString = `${fileSizeLimit / 1024 ** 3}Gb`;
@@ -90,17 +90,17 @@ export default class UploadController implements Controller {
       if (!this._uploadValidator.validateUpload(req.body)) {
         throw new BadRequestError('Invalid upload options', this._uploadValidator.validateUpload.errors);
       }
-      this._uploadService.upload(req.user!.id, req.body);
       res.sendStatus(202);
+      this._uploadService.upload(req.user!.id, req.body);
     } catch (error) {
       next(error);
     }
   }
 
-  private _getArchivingProgress(req: Request, res: Response, next: NextFunction) {
+  private _getUploadingStatus(req: Request, res: Response, next: NextFunction) {
     try {
-      const progress = this._uploadService.getUploadingProgress(req.user!.id);
-      res.json(progress);
+      const status = this._uploadService.getUploadingStatus(req.user!.id);
+      res.json(status);
     } catch (error) {
       next(error);
     }
