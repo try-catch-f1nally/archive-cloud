@@ -7,7 +7,7 @@ import {
   BadRequestError,
   UnauthorizedError
 } from '@try-catch-f1nally/express-microservice';
-import {Config} from '../config/types/config.interface';
+import Config from '../config/types/config.interface';
 import AuthService from './types/auth.service.interface';
 import AuthValidator from './types/auth.validator.interface';
 

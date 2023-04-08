@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {BadRequestError, UnauthorizedError, TokenPayload} from '@try-catch-f1nally/express-microservice';
 import AuthService from './types/auth.service.interface';
-import {Config} from '../config/types/config.interface';
+import Config from '../config/types/config.interface';
 import UserModel from '../user/types/user.model.interface';
 import {LoginData, RegisterData} from './types/auth.types';
 
