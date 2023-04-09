@@ -13,17 +13,7 @@ const envVars = processEnvValidator<EnvVars>({
     REDIS_HOST: {type: 'string', format: 'hostname'},
     REDIS_PORT: {type: 'integer'}
   },
-  required: ['AUTH_PUBLIC_KEY', 'FRONTEND_ORIGIN', 'REDIS_HOST'],
-  errorMessage: {
-    properties: {
-      PORT: 'invalid PORT env var',
-      AUTH_PUBLIC_KEY: 'invalid AUTH_PUBLIC_KEY env var',
-      FRONTEND_ORIGIN: 'invalid FRONTEND_ORIGIN env var',
-      STORAGE_API_ORIGIN: 'invalid STORAGE_API_ORIGIN env var',
-      REDIS_HOST: 'invalid REDIS_HOST env var',
-      REDIS_PORT: 'invalid REDIS_PORT env var'
-    }
-  }
+  required: ['AUTH_PUBLIC_KEY', 'FRONTEND_ORIGIN', 'REDIS_HOST']
 });
 
 export const config: Config = {
