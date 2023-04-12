@@ -49,15 +49,14 @@ export default class UploadServiceImpl implements UploadService {
       method: password && format === '7z' ? ['he'] : []
     };
 
-    const redisKey = `${userId}:${archiveName}`;
     const redisKeyTtl = 4 * 60 * 60;
-    await this._redisClient.set(redisKey, 'process', 'EX', redisKeyTtl);
+    await this._redisClient.set(userId, 'process', 'EX', redisKeyTtl);
 
     const handleEnd = async () => {
       try {
         await fs.rm(userDir, {recursive: true, force: true});
         await this._notifyStorageApiService(userId, archiveName);
-        await this._redisClient.set(redisKey, 'success', 'EX', redisKeyTtl);
+        await this._redisClient.set(userId, 'success', 'EX', redisKeyTtl);
       } catch (error) {
         this._logger.error('Failed to handle "end" event on creating/compressing archive', error);
       }
@@ -66,7 +65,7 @@ export default class UploadServiceImpl implements UploadService {
     const handleError = async (error: unknown, message: string) => {
       try {
         this._logger.debug(message, error);
-        await this._redisClient.set(redisKey, 'error', 'EX', redisKeyTtl);
+        await this._redisClient.set(userId, 'error', 'EX', redisKeyTtl);
         await fs.rm(userDir, {recursive: true, force: true});
       } catch (error) {
         this._logger.error('Failed to handle "error" event on creating/compressing archive', error);
