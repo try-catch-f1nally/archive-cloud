@@ -1,5 +1,3 @@
-export type ArchiveState = UploadingStatus;
-
 export interface CreateArchiveBody {
   name: string;
   files: Array<Blob>;
@@ -7,6 +5,4 @@ export interface CreateArchiveBody {
   password?: string;
 }
 
-export interface UploadingStatus {
-  status: 'process' | 'success' | 'error';
-}
+export type UploadingStatus = 'process' | 'success' | 'error';

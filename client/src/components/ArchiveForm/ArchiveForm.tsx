@@ -15,7 +15,6 @@ const ArchiveForm: FC = () => {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const {data: files} = useGetFilesQuery();
   const fileNames = files === undefined ? [] : files.map((file) => file.name);
-  console.log(fileNames);
   const validationSchema = Yup.object().shape({
     files: Yup.array().min(1, 'Please select at least one file'),
     name: Yup.string()
