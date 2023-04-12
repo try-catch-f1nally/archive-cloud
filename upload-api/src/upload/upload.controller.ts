@@ -97,9 +97,9 @@ export default class UploadController implements Controller {
     }
   }
 
-  private _getUploadingStatus(req: Request, res: Response, next: NextFunction) {
+  private async _getUploadingStatus(req: Request, res: Response, next: NextFunction) {
     try {
-      const status = this._uploadService.getUploadingStatus(req.user!.id);
+      const status = await this._uploadService.getUploadingStatus(req.user!.id);
       res.json(status);
     } catch (error) {
       next(error);
