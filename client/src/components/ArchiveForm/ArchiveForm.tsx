@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import {Formik} from 'formik';
 import {useNavigate} from 'react-router-dom';
 import {useCreateMutation} from '../../redux/upload/upload-api';
+import {useGetFilesQuery} from '../../redux/storage/storage-api';
 import {CreateArchiveBody} from '../../redux/upload/types';
 
 const ArchiveForm: FC = () => {
@@ -12,6 +13,9 @@ const ArchiveForm: FC = () => {
   const [create, {isLoading}] = useCreateMutation();
   const archiveFormats = ['zip', '7z', 'wim', 'tar', 'tar.gz', 'tar.xz', 'tar.bz2'];
   const [showPasswordField, setShowPasswordField] = useState(false);
+  const {data: files} = useGetFilesQuery();
+  const fileNames = files === undefined ? [] : files.map((file) => file.name);
+  console.log(fileNames);
   const validationSchema = Yup.object().shape({
     files: Yup.array().min(1, 'Please select at least one file'),
     name: Yup.string()
@@ -22,6 +26,7 @@ const ArchiveForm: FC = () => {
         /^[A-Za-z0-9-_]+$/,
         'Only latin letters, numbers, dashes and underscores are allowed'
       )
+      .notOneOf(fileNames, 'File with this name already exists')
   });
 
   const initialValues: CreateArchiveBody = {
