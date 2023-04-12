@@ -15,7 +15,7 @@ export const storageApi = createApi({
   endpoints: (builder) => ({
     getFiles: builder.query<File[], void>({
       query: (body) => ({
-        url: ''
+        url: 'files'
       })
     })
   })
