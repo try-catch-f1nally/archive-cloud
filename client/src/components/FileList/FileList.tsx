@@ -1,5 +1,5 @@
 import React, {FC, useContext} from 'react';
-import {Card, ListGroup, Spinner} from 'react-bootstrap';
+import {Card, ListGroup, Spinner, Alert} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import FileItem from './FileItem';
 import {File} from '../../redux/storage/types';
@@ -8,8 +8,6 @@ import {useGetFilesQuery} from '../../redux/storage/storage-api';
 const FileList: FC = () => {
   const {data: files, isLoading, isFetching, isSuccess, isError, error} = useGetFilesQuery();
   const {activeFile} = useContext(FileContext);
-
-  console.log(files);
 
   let content;
 
@@ -40,7 +38,15 @@ const FileList: FC = () => {
     );
   }
 
-  console.log(files);
+  if (isError) {
+    content = (
+      <Alert variant="danger fs-4">
+        <i className="bi bi-exclamation-circle me-2"></i>
+        Error occurred while getting files
+      </Alert>
+    );
+  }
+
   return <>{content}</>;
 };
 
