@@ -11,10 +11,8 @@ export const uploadSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addMatcher(uploadApi.endpoints.getProgress.matchFulfilled, (state, {payload}) => {
+    builder.addMatcher(uploadApi.endpoints.getStatus.matchFulfilled, (state, {payload}) => {
       state.status = payload.status;
-      state.percentage = payload.percentage;
-      state.errorMessage = payload.errorMessage;
     });
   }
 });
