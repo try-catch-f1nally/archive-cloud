@@ -1,5 +1,5 @@
 import React, {FC, useContext} from 'react';
-import {Card, ListGroup, Spinner} from 'react-bootstrap';
+import {Card, ListGroup, Spinner, Alert, Container} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import FileItem from './FileItem';
 import {File} from '../../redux/storage/types';
@@ -8,8 +8,6 @@ import {useGetFilesQuery} from '../../redux/storage/storage-api';
 const FileList: FC = () => {
   const {data: files, isLoading, isFetching, isSuccess, isError, error} = useGetFilesQuery();
   const {activeFile} = useContext(FileContext);
-
-  console.log(files);
 
   let content;
 
@@ -23,7 +21,7 @@ const FileList: FC = () => {
     );
   }
 
-  if (isSuccess && files) {
+  if (isSuccess && files.length >= 1) {
     content = (
       <Card>
         <Card.Header className={'d-flex justify-content-start align-items-center'}>
@@ -40,7 +38,28 @@ const FileList: FC = () => {
     );
   }
 
-  console.log(files);
+  if (isSuccess && files.length === 0) {
+    content = (
+      <Container className="d-flex fs-4 justify-content-center">
+        <Alert variant="warning" className="px-5">
+          <i className="bi bi-exclamation-circle me-2"></i>
+          No files found
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (isError) {
+    content = (
+      <Container className="d-flex fs-4 justify-content-center">
+        <Alert variant="danger" className="px-5">
+          <i className="bi bi-exclamation-circle me-2"></i>
+          Error occurred while getting files
+        </Alert>
+      </Container>
+    );
+  }
+
   return <>{content}</>;
 };
 

@@ -1,4 +1,4 @@
-export type ArchiveState = ArchivingProgress;
+export type ArchiveState = UploadingStatus;
 
 export interface CreateArchiveBody {
   name: string;
@@ -7,8 +7,6 @@ export interface CreateArchiveBody {
   password?: string;
 }
 
-export interface ArchivingProgress {
+export interface UploadingStatus {
   status: 'process' | 'success' | 'error';
-  percentage?: number;
-  errorMessage?: string;
 }

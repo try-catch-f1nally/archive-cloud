@@ -1,16 +1,15 @@
 import React, {FC} from 'react';
-import {ProgressBar} from 'react-bootstrap';
+import {ProgressBar, Spinner} from 'react-bootstrap';
 
 interface UploadProgressProps {
   animated: boolean;
-  percentage: number;
 }
 
-const UploadProgress: FC<UploadProgressProps> = ({percentage, animated}) => {
+const UploadProgress: FC<UploadProgressProps> = ({animated}) => {
   return (
-    <div>
-      <h3>Uploading {percentage}%</h3>
-      <ProgressBar striped={animated} animated={animated} now={percentage} />
+    <div className={'d-flex flex-column align-items-center '}>
+      <Spinner className={'mb-2'} />
+      <h3>Uploading</h3>
     </div>
   );
 };
