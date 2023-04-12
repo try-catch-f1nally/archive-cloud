@@ -8,6 +8,8 @@ type AuthFetchBaseQueryType = (
   options: FetchBaseQueryArgs
 ) => BaseQueryFn<string | FetchArgs, unknown, unknown>;
 
+const baseUrl = process.env.REACT_APP_AUTH_API_URL;
+
 export const authFetchBaseQuery: AuthFetchBaseQueryType = (options) => {
   const baseQuery = fetchBaseQuery({
     prepareHeaders: (headers, {getState}) => {
@@ -26,7 +28,7 @@ export const authFetchBaseQuery: AuthFetchBaseQueryType = (options) => {
       const baseQueryWithCredentials = fetchBaseQuery({credentials: 'include'});
       const response = await baseQueryWithCredentials(
         {
-          url: `${process.env.REACT_APP_AUTH_API_URL}/refresh`,
+          url: `${baseUrl}refresh`,
           method: 'POST'
         },
         api,
