@@ -1,0 +1,11 @@
+/.idea
+/.github
+/dist
+/node_modules
+.editorconfig
+.env
+.eslintrc.cjs
+.gitignore
+.prettierrc.cjs
+Dockerfile
+README.md
