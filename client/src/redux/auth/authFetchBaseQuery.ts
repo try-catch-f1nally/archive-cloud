@@ -28,7 +28,7 @@ export const authFetchBaseQuery: AuthFetchBaseQueryType = (options) => {
       const baseQueryWithCredentials = fetchBaseQuery({credentials: 'include'});
       const response = await baseQueryWithCredentials(
         {
-          url: `${baseUrl}refresh`,
+          url: `${baseUrl}/refresh`,
           method: 'POST'
         },
         api,
