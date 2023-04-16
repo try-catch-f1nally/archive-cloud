@@ -48,7 +48,6 @@ export default class UploadServiceImpl implements UploadService {
     const zipOptions = {
       $bin: path7za,
       recursive: true,
-      noArchiveOnFail: true,
       workingDir: userDir,
       password,
       method: password && format === '7z' ? ['he'] : []
@@ -57,10 +56,13 @@ export default class UploadServiceImpl implements UploadService {
     const redisKeyTtl = 4 * 60 * 60;
     await this._redisClient.set(userId, 'process', 'EX', redisKeyTtl);
 
+    let errorOccurred = false;
     const handleEnd = async () => {
       try {
-        await this._notifyStorageApiService(userId, archiveName);
-        await this._redisClient.set(userId, 'success', 'EX', redisKeyTtl);
+        if (!errorOccurred) {
+          await this._notifyStorageApiService(userId, archiveName);
+          await this._redisClient.set(userId, 'success', 'EX', redisKeyTtl);
+        }
       } catch (error) {
         this._logger.error('Failed to handle "end" event on creating/compressing archive', error);
       } finally {
@@ -70,12 +72,11 @@ export default class UploadServiceImpl implements UploadService {
 
     const handleError = async (error: unknown) => {
       try {
+        errorOccurred = true;
         this._logger.debug(`Error on creating ${archivePath}`, error);
         await this._redisClient.set(userId, 'error', 'EX', redisKeyTtl);
       } catch (error) {
         this._logger.error('Failed to handle "error" event on creating/compressing archive', error);
-      } finally {
-        await fs.rm(userDir, {recursive: true, force: true}).catch(() => `Failed to remove ${userDir}`);
       }
     };
 
