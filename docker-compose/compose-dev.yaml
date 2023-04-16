@@ -90,6 +90,9 @@ services:
 
   mongodb:
     image: mongo:6
+    command:
+      - '--logpath'
+      - '/var/log/mongodb/mongod.log'
     volumes:
       - mongodb-data:/data/db
     networks:
