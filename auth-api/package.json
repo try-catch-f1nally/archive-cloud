@@ -11,7 +11,7 @@
   "scripts": {
     "test": "echo \"No test command specified\"",
     "start": "node --experimental-specifier-resolution=node ./dist/index.js",
-    "dev": "nodemon --experimentalSpecifierResolution=node ./src/index.ts",
+    "dev": "nodemon -L --experimentalSpecifierResolution=node ./src/index.ts",
     "build": "rm -rf ./dist && tsc",
     "lint": "eslint --ignore-path .gitignore ./src/**/*.ts",
     "lint:fix": "eslint --ignore-path .gitignore --fix ./src/**/*.ts",
