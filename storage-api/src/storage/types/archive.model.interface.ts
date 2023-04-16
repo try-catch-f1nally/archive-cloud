@@ -1,11 +1,11 @@
-import {Model, Schema, Document} from 'mongoose';
+import {Document, Model} from 'mongoose';
 
 export interface Archive {
-  userId: Schema.Types.ObjectId;
+  userId: string;
   name: string;
   sizeInBytes: number;
   createdAt: Date;
-  link: String;
+  pathname: string;
 }
 
 export interface ArchiveDocument extends Archive, Document {}

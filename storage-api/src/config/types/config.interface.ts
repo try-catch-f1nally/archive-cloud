@@ -1,14 +1,24 @@
+import mongoose from 'mongoose';
 import {Config as DefaultConfig} from '@try-catch-f1nally/express-microservice';
 
-export interface Config extends DefaultConfig {
+export default interface Config extends DefaultConfig {
   port: number;
-  dbUri: string;
+  mongodb: {
+    uri: string;
+    connectionOptions?: mongoose.ConnectOptions;
+  };
   storage: {
     path: string;
-    fileSizeLimit: number;
   };
   cors: {
     origin: string;
     credentials: boolean;
   };
+}
+
+export interface EnvVars {
+  PORT: number;
+  MONGODB_URI: string;
+  AUTH_PUBLIC_KEY: string;
+  FRONTEND_ORIGIN: string;
 }
