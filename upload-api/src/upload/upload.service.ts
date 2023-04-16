@@ -1,6 +1,6 @@
-import path from 'path';
-import fs from 'fs/promises';
-import http from 'http';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import http from 'node:http';
 import {path7za} from '7zip-bin';
 import node7z from 'node-7z';
 import {BadRequestError, Logger} from '@try-catch-f1nally/express-microservice';
@@ -21,30 +21,35 @@ export default class UploadServiceImpl implements UploadService {
   }
 
   getUserUploadDir(userId: string) {
-    return path.join(this._config.upload.path, userId);
+    return path.resolve(this._config.upload.path, userId);
   }
 
-  async prepareUserUploadDir(userId: string) {
+  async prepareForUpload(userId: string) {
+    const status = await this._redisClient.get(userId);
+    if (status === 'process') {
+      throw new BadRequestError('Please wait for the completion of your previous upload request');
+    }
+    await this._redisClient.del(userId);
     const userDir = this.getUserUploadDir(userId);
-    await fs.rm(userDir, {recursive: true}).catch((error) => {
-      if (error instanceof Object && 'code' in error && error.code === 'EBUSY') {
-        throw new BadRequestError('Please wait for the completion of your previous upload request');
-      }
-    });
+    await fs.rm(userDir, {force: true, recursive: true});
     await fs.mkdir(userDir, {recursive: true});
+  }
+
+  cleanUserUploadDir(userId: string) {
+    return fs.rm(this.getUserUploadDir(userId), {force: true, recursive: true});
   }
 
   async upload(userId: string, {name, format, password}: UploadOptions) {
     const userDir = this.getUserUploadDir(userId);
+    const archiveName = name + '.' + format;
     const [archiveType, compressionExt] = format.split('.');
-    const withCompression = !!compressionExt;
-    const destDir = path.join(this._config.storage.path, userId);
-    const archiveNameWithoutCompression = `${destDir}${path.sep}${name}.${archiveType}`;
-    const archiveName = `${destDir}${path.sep}${name}.${format}`;
-    const source = `${userDir}${path.sep}*.*`;
+    const archivePath = path.join(this._config.storage.path, userId, archiveName);
+    const source = path.join(userDir, '*.*');
     const zipOptions = {
       $bin: path7za,
       recursive: true,
+      noArchiveOnFail: true,
+      workingDir: userDir,
       password,
       method: password && format === '7z' ? ['he'] : []
     };
@@ -54,40 +59,44 @@ export default class UploadServiceImpl implements UploadService {
 
     const handleEnd = async () => {
       try {
-        await fs.rm(userDir, {recursive: true, force: true});
         await this._notifyStorageApiService(userId, archiveName);
         await this._redisClient.set(userId, 'success', 'EX', redisKeyTtl);
       } catch (error) {
         this._logger.error('Failed to handle "end" event on creating/compressing archive', error);
+      } finally {
+        await fs.rm(userDir, {recursive: true, force: true}).catch(() => `Failed to remove ${userDir}`);
       }
     };
 
-    const handleError = async (error: unknown, message: string) => {
+    const handleError = async (error: unknown) => {
       try {
-        this._logger.debug(message, error);
+        this._logger.debug(`Error on creating ${archivePath}`, error);
         await this._redisClient.set(userId, 'error', 'EX', redisKeyTtl);
-        await fs.rm(userDir, {recursive: true, force: true});
       } catch (error) {
         this._logger.error('Failed to handle "error" event on creating/compressing archive', error);
+      } finally {
+        await fs.rm(userDir, {recursive: true, force: true}).catch(() => `Failed to remove ${userDir}`);
       }
     };
 
-    const runCompressing = () =>
+    if (compressionExt) {
+      const tempDir = path.resolve(this._config.upload.path, 'temp', userId);
+      const tempArchivePath = path.join(tempDir, name + '.' + archiveType);
       node7z
-        .add(archiveName, archiveNameWithoutCompression, zipOptions)
-        .on('error', async (error: unknown) => handleError(error, `Error on compressing ${archiveName}`))
-        .on('end', () => handleEnd());
-
-    node7z
-      .add(archiveNameWithoutCompression, source, zipOptions)
-      .on('error', async (error: unknown) => handleError(error, `Error on creating ${archiveNameWithoutCompression}`))
-      .on('end', () => (withCompression ? runCompressing() : handleEnd()));
+        .add(tempArchivePath, source, zipOptions)
+        .on('error', handleError)
+        .on('end', () =>
+          node7z.add(archivePath, tempArchivePath, zipOptions).on('error', handleError).on('end', handleEnd)
+        );
+    } else {
+      node7z.add(archivePath, source, zipOptions).on('error', handleError).on('end', handleEnd);
+    }
   }
 
   // TODO: replace http request with rabbitmq event
-  _notifyStorageApiService(userId: string, archiveName: string) {
-    const data = JSON.stringify({userId, archiveName});
-    const req = http.request(this._config['storage-api'].url, {
+  _notifyStorageApiService(userId: string, name: string) {
+    const data = JSON.stringify({userId, name});
+    const req = http.request(`${this._config['storage-api'].url}/archive`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

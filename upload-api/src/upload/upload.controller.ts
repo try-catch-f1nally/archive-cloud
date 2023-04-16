@@ -6,7 +6,8 @@ import {
   Response,
   NextFunction,
   BadRequestError,
-  Middleware
+  Middleware,
+  UnauthorizedError
 } from '@try-catch-f1nally/express-microservice';
 import Config from '../config/types/config.interface';
 import UploadService from './types/upload.service.interface';
@@ -50,7 +51,7 @@ export default class UploadController implements Controller {
 
   private async _prepareUserDirMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
-      await this._uploadService.prepareUserUploadDir(req.user!.id);
+      await this._uploadService.prepareForUpload(req.user!.id);
       next();
     } catch (error) {
       next(error);
@@ -62,15 +63,16 @@ export default class UploadController implements Controller {
     return multer({
       limits: {fileSize: this._config.upload.fileSizeLimit},
       storage: multer.diskStorage({
-        destination: (req, file, callback) => {
-          callback(null, this._uploadService.getUserUploadDir(userId));
-        },
+        destination: (req, file, callback) => callback(null, this._uploadService.getUserUploadDir(userId)),
         filename: (req, file, callback) => callback(null, file.originalname)
       })
     }).fields([{name: 'files[]'}])(req, res, next);
   }
 
-  private _uploadErrorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
+  private async _uploadErrorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
+    if (!(err instanceof UnauthorizedError)) {
+      await this._uploadService.cleanUserUploadDir(req.user!.id);
+    }
     if (err instanceof MulterError && err.code === 'LIMIT_FILE_SIZE') {
       const {fileSizeLimit} = this._config.upload;
       let fileSizeLimitString;
@@ -85,13 +87,13 @@ export default class UploadController implements Controller {
     }
   }
 
-  private _upload(req: Request, res: Response, next: NextFunction) {
+  private async _upload(req: Request, res: Response, next: NextFunction) {
     try {
       if (!this._uploadValidator.validateUpload(req.body)) {
         throw new BadRequestError('Invalid upload options', this._uploadValidator.validateUpload.errors);
       }
+      await this._uploadService.upload(req.user!.id, req.body);
       res.sendStatus(202);
-      this._uploadService.upload(req.user!.id, req.body);
     } catch (error) {
       next(error);
     }
