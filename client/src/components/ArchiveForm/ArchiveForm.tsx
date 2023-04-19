@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useState, useEffect} from 'react';
 import {Button, Col, Form, InputGroup, Row, Spinner} from 'react-bootstrap';
 import DropzoneBox from '../DropzoneBox/DropzoneBox';
 import * as Yup from 'yup';
@@ -13,8 +13,14 @@ const ArchiveForm: FC = () => {
   const [create, {isLoading}] = useCreateMutation();
   const archiveFormats = ['zip', '7z', 'wim', 'tar', 'tar.gz', 'tar.xz', 'tar.bz2'];
   const [showPasswordField, setShowPasswordField] = useState(false);
-  const {data: files} = useGetFilesQuery();
-  const fileNames = files === undefined ? [] : files.map((file) => file.name);
+  // @ts-ignore
+  const {data: files} = useGetFilesQuery('get-files', {
+    refetchOnMountOrArgChange: true,
+    refetchOnWindowFocus: true
+  });
+
+  const fileNames = files === undefined ? [] : files.map((file) => file.name.split('.')[0]);
+
   const validationSchema = Yup.object().shape({
     files: Yup.array().min(1, 'Please select at least one file'),
     name: Yup.string()
