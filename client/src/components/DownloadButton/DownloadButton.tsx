@@ -5,6 +5,7 @@ interface DownloadButtonProps {
   disabled?: boolean;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
+  isLoading?: boolean;
   size?: 'sm' | 'lg';
 }
 

@@ -11,10 +11,17 @@ const FileItem: FC<{
   isActive: boolean;
 }> = ({file, isActive}) => {
   const {activeFile, setActiveFile} = useContext(FileContext);
+
   const activeStyle = {
     backgroundColor: '#e8f0fe'
   };
-  const [deleteFile] = useDeleteFileMutation();
+
+  const loadingStyle = {
+    backgroundColor: '#b8b8b8',
+    opacity: 0.5
+  };
+
+  const [deleteFile, {isLoading, isSuccess}] = useDeleteFileMutation();
 
   const deleteHandler = () => {
     deleteFile({id: file._id});
@@ -25,9 +32,13 @@ const FileItem: FC<{
       className={'d-flex justify-content-start align-items-center'}
       action
       onClick={() => {
-        isActive ? setActiveFile(null) : setActiveFile(file);
+        !isActive && setActiveFile(file);
       }}
-      style={{height: 50, backgroundColor: isActive ? '#e8f0fe' : 'white'}}
+      style={{
+        height: 50,
+        ...(isActive && activeStyle),
+        ...((isLoading || isSuccess) && loadingStyle)
+      }}
     >
       <span style={{width: 500}}>{file.name}</span>
       <span style={{width: 200}}>{file.createdAt}</span>
@@ -40,8 +51,14 @@ const FileItem: FC<{
             }}
             size={'sm'}
             className={'me-3'}
+            disabled={isLoading || isSuccess}
           />
-          <DeleteButton onClick={deleteHandler} size={'sm'} />
+          <DeleteButton
+            onClick={deleteHandler}
+            size={'sm'}
+            isLoading={isLoading}
+            isSuccess={isSuccess}
+          />
         </div>
       )}
     </ListGroup.Item>

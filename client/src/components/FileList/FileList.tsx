@@ -6,7 +6,7 @@ import {File} from '../../redux/storage/types';
 import {useGetFilesQuery} from '../../redux/storage/storage-api';
 
 const FileList: FC = () => {
-  const {activeFile} = useContext(FileContext);
+  const {activeFile, setActiveFile} = useContext(FileContext);
 
   const {
     data: files,
@@ -33,7 +33,10 @@ const FileList: FC = () => {
   if (isSuccess && files.length >= 1) {
     content = (
       <Card>
-        <Card.Header className={'d-flex justify-content-start align-items-center'}>
+        <Card.Header
+          onClick={() => setActiveFile(null)}
+          className={'d-flex justify-content-start align-items-center'}
+        >
           <span style={{width: 500}}>Name</span>
           <span style={{width: 200}}>Date</span>
           <span style={{width: 200}}>File size</span>
