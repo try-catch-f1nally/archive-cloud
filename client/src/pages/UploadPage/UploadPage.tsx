@@ -15,7 +15,7 @@ const UploadPage: FC = () => {
   const isSuccessStatus = status === 'success';
 
   // @ts-ignore
-  var {data, isLoading, isSuccess, isError, error} = useGetStatusQuery('get-status', {
+  const {data, isLoading, isSuccess} = useGetStatusQuery('get-status', {
     pollingInterval
   });
 
