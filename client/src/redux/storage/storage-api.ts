@@ -12,17 +12,20 @@ export const storageApi = createApi({
     unknown,
     {data: {message: string}}
   >,
+  tagTypes: ['File'],
   endpoints: (builder) => ({
     getFiles: builder.query<File[], void>({
       query: () => ({
         url: 'archive'
-      })
+      }),
+      providesTags: ['File']
     }),
     deleteFile: builder.mutation<void, {id: string}>({
       query: (body) => ({
         url: `archive/${body.id}`,
         method: 'DELETE'
-      })
+      }),
+      invalidatesTags: ['File']
     })
   })
 });

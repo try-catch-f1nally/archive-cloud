@@ -4,6 +4,7 @@ import {FileContext} from '../../pages/FilesPage/FilesPage';
 import DownloadButton from '../DownloadButton/DownloadButton';
 import DeleteButton from '../DeleteButton/DeleteButton';
 import {File} from '../../redux/storage/types';
+import {useDeleteFileMutation} from '../../redux/storage/storage-api';
 
 const FileItem: FC<{
   file: File;
@@ -12,6 +13,11 @@ const FileItem: FC<{
   const {activeFile, setActiveFile} = useContext(FileContext);
   const activeStyle = {
     backgroundColor: '#e8f0fe'
+  };
+  const [deleteFile] = useDeleteFileMutation();
+
+  const deleteHandler = () => {
+    deleteFile({id: file._id});
   };
 
   return (
@@ -24,18 +30,18 @@ const FileItem: FC<{
       style={{height: 50, backgroundColor: isActive ? '#e8f0fe' : 'white'}}
     >
       <span style={{width: 500}}>{file.name}</span>
-      <span style={{width: 200}}>{file.date}</span>
-      <span style={{width: 200}}>{file.size}</span>
+      <span style={{width: 200}}>{file.createdAt}</span>
+      <span style={{width: 200}}>{file.sizeInBytes}</span>
       {isActive && (
         <div className="d-flex flex-grow-1 justify-content-end">
           <DownloadButton
             onClick={() => {
-              window.location.href = file.link;
+              window.location.href = file.pathname;
             }}
             size={'sm'}
             className={'me-3'}
           />
-          <DeleteButton onClick={() => {}} size={'sm'} />
+          <DeleteButton onClick={deleteHandler} size={'sm'} />
         </div>
       )}
     </ListGroup.Item>

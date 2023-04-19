@@ -30,8 +30,6 @@ const FileList: FC = () => {
     );
   }
 
-  console.log(files);
-
   if (isSuccess && files.length >= 1) {
     content = (
       <Card>
