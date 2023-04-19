@@ -14,12 +14,18 @@ export const storageApi = createApi({
   >,
   endpoints: (builder) => ({
     getFiles: builder.query<File[], void>({
+      query: () => ({
+        url: 'archive'
+      })
+    }),
+    deleteFile: builder.mutation<void, {id: string}>({
       query: (body) => ({
-        url: 'files'
+        url: `archive/${body.id}`,
+        method: 'DELETE'
       })
     })
   })
 });
 
-export const {useGetFilesQuery} = storageApi;
+export const {useGetFilesQuery, useDeleteFileMutation} = storageApi;
 export default storageApi.reducer;

@@ -1,4 +1,4 @@
-import React, {FC, useContext} from 'react';
+import React, {FC, useContext, useEffect} from 'react';
 import {Card, ListGroup, Spinner, Alert, Container} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import FileItem from './FileItem';
@@ -6,8 +6,17 @@ import {File} from '../../redux/storage/types';
 import {useGetFilesQuery} from '../../redux/storage/storage-api';
 
 const FileList: FC = () => {
-  const {data: files, isLoading, isFetching, isSuccess, isError, error} = useGetFilesQuery();
   const {activeFile} = useContext(FileContext);
+
+  const {
+    data: files,
+    isLoading,
+    isFetching,
+    isSuccess,
+    isError,
+    error
+    // @ts-ignore
+  } = useGetFilesQuery('get-files', {refetchOnMountOrArgChange: true, refetchOnWindowFocus: true});
 
   let content;
 
