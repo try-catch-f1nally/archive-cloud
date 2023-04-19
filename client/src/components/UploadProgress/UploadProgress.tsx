@@ -17,6 +17,15 @@ const UploadProgress: FC<UploadProgressProps> = ({status}) => {
     );
   }
 
+  if (status === 'error') {
+    content = (
+      <div className={'d-flex flex-column align-items-center '}>
+        <i className="bi bi-x-circle fs-1"></i>
+        <h3>Error. Try again</h3>
+      </div>
+    );
+  }
+
   if (status === 'success') {
     content = (
       <div className={'d-flex flex-column align-items-center '}>

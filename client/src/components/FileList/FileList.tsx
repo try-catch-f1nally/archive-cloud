@@ -21,6 +21,8 @@ const FileList: FC = () => {
     );
   }
 
+  console.log(files);
+
   if (isSuccess && files.length >= 1) {
     content = (
       <Card>
@@ -31,7 +33,7 @@ const FileList: FC = () => {
         </Card.Header>
         <ListGroup variant="flush">
           {files?.map((file, index) => (
-            <FileItem key={index} file={file} isActive={file.id === activeFile?.id} />
+            <FileItem key={index} file={file} isActive={file._id === activeFile?._id} />
           ))}
         </ListGroup>
       </Card>

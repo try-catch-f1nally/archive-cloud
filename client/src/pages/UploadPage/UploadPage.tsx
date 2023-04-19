@@ -1,7 +1,7 @@
 import React, {FC, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import UploadProgress from '../../components/UploadProgress/UploadProgress';
-import {Container, Button} from 'react-bootstrap';
+import {Container, Button, Spinner} from 'react-bootstrap';
 import {useAppSelector} from '../../hooks';
 import {selectIsAuth, selectToken} from '../../redux/auth/selectors';
 import {Navigate} from 'react-router-dom';
@@ -12,14 +12,12 @@ const UploadPage: FC = () => {
   const navigate = useNavigate();
   const [pollingInterval, setPollingInterval] = useState<number | undefined>(300);
   const [status, setStatus] = useState<UploadingStatus | undefined>();
-  const isSuccess = status === 'success';
+  const isSuccessStatus = status === 'success';
 
   // @ts-ignore
-  const {data} = useGetStatusQuery('get-status', {
+  var {data, isLoading, isSuccess, isError, error} = useGetStatusQuery('get-status', {
     pollingInterval
   });
-
-  console.log(data);
 
   useEffect(() => {
     setStatus(data);
@@ -38,21 +36,45 @@ const UploadPage: FC = () => {
   return (
     <main>
       <Container>
-        <div className={'p-5 mb-2'}>
-          <UploadProgress status={status} />
-        </div>
-        <div className={'d-flex justify-content-center'}>
-          <Button
-            size={'lg'}
-            disabled={!isSuccess}
-            onClick={() => {
-              navigate('/files');
-            }}
-            className={'px-4'}
-          >
-            To my files
-          </Button>
-        </div>
+        {isLoading && (
+          <div>
+            <div className={'d-flex flex-column mt-4 align-items-center'}>
+              <Spinner animation="grow" />
+              <div className={'mt-2 fs-3'}>Trying get status...</div>
+            </div>
+          </div>
+        )}
+        {isSuccess && (
+          <div>
+            <div className={'p-5 mb-2'}>
+              <UploadProgress status={status} />
+            </div>
+            <div className={'d-flex justify-content-center'}>
+              {status === 'error' ? (
+                <Button
+                  size={'lg'}
+                  onClick={() => {
+                    navigate('/upload');
+                  }}
+                  className={'px-4'}
+                >
+                  To upload page
+                </Button>
+              ) : (
+                <Button
+                  size={'lg'}
+                  disabled={!isSuccessStatus}
+                  onClick={() => {
+                    navigate('/files');
+                  }}
+                  className={'px-4'}
+                >
+                  To my files
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
       </Container>
     </main>
   );
