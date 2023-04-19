@@ -36,9 +36,9 @@ export default class StorageController implements Controller {
   }
 
   private _initialiseRouter(): void {
-    this.router.get('/archive', this._authMiddleware.middleware, this._getUserArchives.bind(this));
-    this.router.post('/archive', this._discoverArchive.bind(this));
-    this.router.delete('/archive/:id', this._authMiddleware.middleware, this._deleteArchive.bind(this));
+    this.router.get('/archives', this._authMiddleware.middleware, this._getUserArchives.bind(this));
+    this.router.post('/archives', this._discoverArchive.bind(this));
+    this.router.delete('/archives/:id', this._authMiddleware.middleware, this._deleteArchive.bind(this));
   }
 
   private async _getUserArchives(req: Request, res: Response, next: NextFunction) {

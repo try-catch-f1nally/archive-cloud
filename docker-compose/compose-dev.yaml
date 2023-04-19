@@ -12,6 +12,7 @@ services:
       REACT_APP_AUTH_API_URL: http://localhost:8080/auth-api
       REACT_APP_UPLOAD_API_URL: http://localhost:8080/upload-api
       REACT_APP_STORAGE_API_URL: http://localhost:8080/storage-api
+      REACT_APP_STATIC_SERVER_URL: http://localhost:8081
     volumes:
       - ../client:/usr/src/app
       - /usr/src/app/node_modules
@@ -46,7 +47,7 @@ services:
       PORT: 3000
       REDIS_HOST: redis
       FRONTEND_ORIGIN: http://localhost:3000
-      STORAGE_API_ORIGIN: http://nginx/storage-api
+      STORAGE_API_ORIGIN: http://storage-api:3000
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
       USE_SYSTEM_7ZA: true
     volumes:
@@ -56,6 +57,7 @@ services:
       - archives:/usr/src/app/archives
     networks:
       - upload-api-network
+      - upload-api-storage-api-network
     depends_on:
       - redis
 
@@ -74,10 +76,11 @@ services:
       - archives:/usr/src/app/archives
     networks:
       - storage-api-network
+      - upload-api-storage-api-network
     depends_on:
       - mongodb
 
-  nginx:
+  reverse-proxy:
     image: nginx:1.24.0
     ports:
       - "8080:80"
@@ -87,6 +90,14 @@ services:
       - auth-api-network
       - upload-api-network
       - storage-api-network
+
+  nginx:
+    image: nginx:1.24.0
+    ports:
+      - "8081:80"
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - archives:/var/www/static/archives/
 
   mongodb:
     image: mongo:6
@@ -116,3 +127,4 @@ networks:
   auth-api-network:
   upload-api-network:
   storage-api-network:
+  upload-api-storage-api-network:

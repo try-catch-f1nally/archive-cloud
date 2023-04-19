@@ -40,15 +40,17 @@ export default class UploadServiceImpl implements UploadService {
   }
 
   async upload(userId: string, {name, format, password}: UploadOptions) {
-    const userDir = this.getUserUploadDir(userId);
     const archiveName = name + '.' + format;
     const [archiveType, compressionExt] = format.split('.');
-    const archivePath = path.join(this._config.storage.path, userId, archiveName);
-    const source = path.join(userDir, '*.*');
+    const uploadDir = this.getUserUploadDir(userId);
+    const archiveDir = path.join(this._config.storage.path, userId);
+    const archivePath = path.join(archiveDir, archiveName);
+    await fs.mkdir(archiveDir, {recursive: true});
+    const source = path.join(uploadDir, '*.*');
     const zipOptions = {
       $bin: path7za,
       recursive: true,
-      workingDir: userDir,
+      workingDir: uploadDir,
       password,
       method: password && format === '7z' ? ['he'] : []
     };
@@ -66,7 +68,7 @@ export default class UploadServiceImpl implements UploadService {
       } catch (error) {
         this._logger.error('Failed to handle "end" event on creating/compressing archive', error);
       } finally {
-        await fs.rm(userDir, {recursive: true, force: true}).catch(() => `Failed to remove ${userDir}`);
+        await fs.rm(uploadDir, {recursive: true, force: true}).catch(() => `Failed to remove ${uploadDir}`);
       }
     };
 
@@ -97,7 +99,7 @@ export default class UploadServiceImpl implements UploadService {
   // TODO: replace http request with rabbitmq event
   _notifyStorageApiService(userId: string, name: string) {
     const data = JSON.stringify({userId, name});
-    const req = http.request(`${this._config['storage-api'].url}/archive`, {
+    const req = http.request(`${this._config['storage-api'].url}/archives`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
