@@ -69,12 +69,10 @@ const FileItem: FC<{
       {isActive && (
         <div className="d-flex flex-grow-1 justify-content-end">
           <DownloadButton
-            onClick={() => {
-              window.location.href = pathname;
-            }}
             size={'sm'}
             className={'me-3'}
             disabled={isLoading}
+            link={process.env.REACT_APP_STATIC_SERVER_URL + pathname.replace('/archives', '')}
           />
           <DeleteButton onClick={deleteHandler} size={'sm'} isLoading={isLoading} />
         </div>

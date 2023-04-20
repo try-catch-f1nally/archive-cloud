@@ -3,20 +3,20 @@ import {Button} from 'react-bootstrap';
 
 interface DownloadButtonProps {
   disabled?: boolean;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
   isLoading?: boolean;
   size?: 'sm' | 'lg';
+  link: string;
 }
 
 const DownloadButton: FC<DownloadButtonProps> = ({
-  onClick,
   disabled = false,
   className,
-  size = 'lg'
+  size = 'lg',
+  link
 }) => {
   return (
-    <Button size={size} disabled={disabled} onClick={onClick} className={className}>
+    <Button size={size} disabled={disabled} className={className} href={link}>
       Download <i className={'bi-download'} />
     </Button>
   );

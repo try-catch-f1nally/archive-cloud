@@ -18,8 +18,6 @@ const FileList: FC = () => {
     // @ts-ignore
   } = useGetFilesQuery('get-files', {refetchOnMountOrArgChange: true, refetchOnWindowFocus: true});
 
-  console.log('isLoading:' + isLoading + ' isFetching:' + isFetching + ' isSuccess:' + isSuccess);
-
   let content;
 
   if (isLoading || isFetching) {
