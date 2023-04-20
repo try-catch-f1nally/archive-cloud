@@ -105,7 +105,7 @@ const SignUpForm: FC = () => {
             feedbackType={'invalid'}
             id={'user-agree-checkbox'}
             type={'checkbox'}
-            label={'I have read and agree to 7-Zip Online Terms of Service and Privacy Policy.'}
+            label={'I have read and agree to Archive Cloud Terms of Service and Privacy Policy.'}
             required
           />
           {error && 'data' in error && <ErrorMessage message={error.data.message} />}
