@@ -16,7 +16,8 @@ const UploadPage: FC = () => {
 
   // @ts-ignore
   const {data, isLoading, isSuccess, isError} = useGetStatusQuery('get-status', {
-    pollingInterval
+    pollingInterval,
+    refetchOnMountOrArgChange: true
   });
 
   useEffect(() => {
