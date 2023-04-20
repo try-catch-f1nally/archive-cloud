@@ -1,4 +1,4 @@
-import React, {FC, useContext} from 'react';
+import React, {FC, useContext, useEffect} from 'react';
 import {ListGroup} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import DownloadButton from '../DownloadButton/DownloadButton';
@@ -21,7 +21,8 @@ function formatBytes(bytes: number, decimals = 2) {
 const FileItem: FC<{
   file: File;
   isActive: boolean;
-}> = ({file, isActive}) => {
+  disabled: boolean;
+}> = ({file, isActive, disabled}) => {
   const {activeFile, setActiveFile} = useContext(FileContext);
   const [deleteFile, {isLoading, isSuccess}] = useDeleteFileMutation();
 
@@ -38,6 +39,12 @@ const FileItem: FC<{
     opacity: 0.5
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      setActiveFile(null);
+    }
+  }, [isLoading, isSuccess]);
+
   const deleteHandler = () => {
     deleteFile({id: file._id});
   };
@@ -45,15 +52,16 @@ const FileItem: FC<{
   return (
     <ListGroup.Item
       className={'d-flex justify-content-start align-items-center'}
-      action
       onClick={() => {
         !isActive && setActiveFile(file);
       }}
       style={{
         height: 50,
+        cursor: 'pointer',
         ...(isActive && activeStyle),
-        ...((isLoading || isSuccess) && loadingStyle)
+        ...(isLoading && loadingStyle)
       }}
+      disabled={disabled}
     >
       <span style={{width: 500}}>{name}</span>
       <span style={{width: 200}}>{date}</span>
@@ -66,14 +74,9 @@ const FileItem: FC<{
             }}
             size={'sm'}
             className={'me-3'}
-            disabled={isLoading || isSuccess}
+            disabled={isLoading}
           />
-          <DeleteButton
-            onClick={deleteHandler}
-            size={'sm'}
-            isLoading={isLoading}
-            isSuccess={isSuccess}
-          />
+          <DeleteButton onClick={deleteHandler} size={'sm'} isLoading={isLoading} />
         </div>
       )}
     </ListGroup.Item>

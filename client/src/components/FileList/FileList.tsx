@@ -18,6 +18,8 @@ const FileList: FC = () => {
     // @ts-ignore
   } = useGetFilesQuery('get-files', {refetchOnMountOrArgChange: true, refetchOnWindowFocus: true});
 
+  console.log('isLoading:' + isLoading + ' isFetching:' + isFetching + ' isSuccess:' + isSuccess);
+
   let content;
 
   if (isLoading || isFetching) {
@@ -41,11 +43,31 @@ const FileList: FC = () => {
           <span style={{width: 200}}>Date</span>
           <span style={{width: 200}}>File size</span>
         </Card.Header>
-        <ListGroup variant="flush">
-          {files?.map((file, index) => (
-            <FileItem key={index} file={file} isActive={file._id === activeFile?._id} />
-          ))}
-        </ListGroup>
+        <div style={{opacity: isFetching ? 0.5 : 1}}>
+          {isFetching && (
+            <Spinner
+              style={{
+                position: 'absolute',
+                overflow: 'show',
+                margin: 'auto',
+                zIndex: 999,
+                top: '50%',
+                left: '50%'
+              }}
+              variant="primary"
+            />
+          )}
+          <ListGroup variant="flush">
+            {files?.map((file, index) => (
+              <FileItem
+                key={index}
+                file={file}
+                isActive={file._id === activeFile?._id}
+                disabled={isFetching ? true : false}
+              />
+            ))}
+          </ListGroup>
+        </div>
       </Card>
     );
   }

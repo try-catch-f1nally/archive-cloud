@@ -6,7 +6,6 @@ interface DeleteButtonProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
   isLoading?: boolean;
-  isSuccess?: boolean;
   size?: 'sm' | 'lg';
 }
 
@@ -15,7 +14,6 @@ const DeleteButton: FC<DeleteButtonProps> = ({
   disabled = false,
   className,
   isLoading,
-  isSuccess,
   size = 'lg'
 }) => {
   let content;
@@ -28,15 +26,7 @@ const DeleteButton: FC<DeleteButtonProps> = ({
     );
   }
 
-  if (isSuccess) {
-    content = (
-      <div className="d-flex justify-content-center">
-        <i className={'bi-check-lg mx-3'}></i>
-      </div>
-    );
-  }
-
-  if (!isLoading && !isSuccess) {
+  if (!isLoading) {
     content = (
       <div>
         Delete <i className={'bi-trash3'} />
@@ -47,7 +37,7 @@ const DeleteButton: FC<DeleteButtonProps> = ({
   return (
     <Button
       size={size}
-      disabled={disabled || isLoading || isSuccess}
+      disabled={disabled || isLoading}
       variant="danger"
       onClick={onClick}
       className={className}
