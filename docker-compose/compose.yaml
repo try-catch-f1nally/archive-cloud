@@ -5,7 +5,7 @@ name: archive-cloud
 services:
   client:
     build:
-      context: ../client
+      context: ../services/client
       args:
         REACT_APP_AUTH_API_URL: http://localhost:8080/auth-api
         REACT_APP_UPLOAD_API_URL: http://localhost:8080/upload-api
@@ -15,7 +15,7 @@ services:
       - "3000:80"
 
   auth-api:
-    build: ../auth-api
+    build: ../services/auth-api
     environment:
       MONGODB_URI: mongodb://mongodb:27017/auth-api
       FRONTEND_ORIGIN: http://localhost:3000
@@ -26,7 +26,7 @@ services:
       - auth-api-network
 
   upload-api:
-    build: ../upload-api
+    build: ../services/upload-api
     environment:
       REDIS_HOST: redis
       FRONTEND_ORIGIN: http://localhost:3000
@@ -43,7 +43,7 @@ services:
       - redis
 
   storage-api:
-    build: ../storage-api
+    build: ../services/storage-api
     environment:
       MONGODB_URI: mongodb://mongodb:27017/storage-api
       FRONTEND_ORIGIN: http://localhost:3000
@@ -69,7 +69,7 @@ services:
       - upload-api-storage-api-network
 
   nginx:
-    build: ../nginx
+    build: ../services/nginx
     ports:
       - "8081:80"
     volumes:
