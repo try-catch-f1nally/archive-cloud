@@ -1,8 +1,9 @@
 import React, {FC, useContext, useEffect} from 'react';
-import {ListGroup} from 'react-bootstrap';
+import {ListGroup, Modal} from 'react-bootstrap';
 import {FileContext} from '../../pages/FilesPage/FilesPage';
 import DownloadButton from '../DownloadButton/DownloadButton';
 import DeleteButton from '../DeleteButton/DeleteButton';
+import ErrorModal from '../ErrorModal/ErrorModal';
 import {File} from '../../redux/storage/types';
 import {useDeleteFileMutation} from '../../redux/storage/storage-api';
 
@@ -24,7 +25,8 @@ const FileItem: FC<{
   disabled: boolean;
 }> = ({file, isActive, disabled}) => {
   const {activeFile, setActiveFile} = useContext(FileContext);
-  const [deleteFile, {isLoading, isSuccess}] = useDeleteFileMutation();
+  const [deleteFile, {isLoading, isSuccess, isError}] = useDeleteFileMutation();
+  const [modalShow, setModalShow] = React.useState(false);
 
   const {name, pathname} = file;
   const size = formatBytes(file.sizeInBytes);
@@ -43,7 +45,10 @@ const FileItem: FC<{
     if (isSuccess) {
       setActiveFile(null);
     }
-  }, [isLoading, isSuccess]);
+    if (isError) {
+      setModalShow(true);
+    }
+  }, [isLoading, isSuccess, isError]);
 
   const deleteHandler = () => {
     deleteFile({id: file._id});
@@ -77,6 +82,13 @@ const FileItem: FC<{
           <DeleteButton onClick={deleteHandler} size={'sm'} isLoading={isLoading} />
         </div>
       )}
+      <ErrorModal
+        message="Something went wrong while deleting file"
+        show={modalShow}
+        onHide={() => {
+          setModalShow(false);
+        }}
+      />
     </ListGroup.Item>
   );
 };

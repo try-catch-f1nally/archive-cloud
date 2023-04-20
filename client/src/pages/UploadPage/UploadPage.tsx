@@ -15,7 +15,7 @@ const UploadPage: FC = () => {
   const isSuccessStatus = status === 'success';
 
   // @ts-ignore
-  const {data, isLoading, isSuccess} = useGetStatusQuery('get-status', {
+  const {data, isLoading, isSuccess, isError} = useGetStatusQuery('get-status', {
     pollingInterval
   });
 
@@ -41,6 +41,14 @@ const UploadPage: FC = () => {
             <div className={'d-flex flex-column mt-4 align-items-center'}>
               <Spinner animation="grow" />
               <div className={'mt-2 fs-3'}>Trying get status...</div>
+            </div>
+          </div>
+        )}
+        {isError && (
+          <div>
+            <div className={'d-flex flex-column mt-4 align-items-center'}>
+              <Spinner animation="grow" />
+              <div className={'mt-2 fs-3'}>Error occurred while getting status</div>
             </div>
           </div>
         )}
