@@ -6,7 +6,7 @@ const initialState: AuthState = {
   isAuth: localStorage.getItem('isAuth') === 'true',
   userId: localStorage.getItem('userId') || null,
   email: localStorage.getItem('email') || null,
-  accessToken: null
+  accessToken: localStorage.getItem('accessToken') || null
 };
 
 export const authSlice = createSlice({
@@ -39,6 +39,7 @@ const setAuthState = (state: Draft<AuthState>, authResponse: AuthResponse) => {
   state.accessToken = authResponse.accessToken;
   localStorage.setItem('isAuth', 'true');
   localStorage.setItem('userId', authResponse.userId);
+  localStorage.setItem('accessToken', authResponse.accessToken);
 };
 
 const resetAuthState = (state: Draft<AuthState>) => {
@@ -49,6 +50,7 @@ const resetAuthState = (state: Draft<AuthState>) => {
   localStorage.removeItem('isAuth');
   localStorage.removeItem('userId');
   localStorage.removeItem('email');
+  localStorage.removeItem('accessToken');
 };
 
 export const {setEmail, setAuth} = authSlice.actions;
