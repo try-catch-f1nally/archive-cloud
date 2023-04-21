@@ -17,7 +17,8 @@ export const uploadApi = createApi({
       query: (body) => ({
         url: 'upload',
         method: 'POST',
-        body
+        body,
+        responseHandler: (response: {text: () => any}) => response.text()
       })
     }),
     getStatus: builder.query<ArchivingStatus, void>({
