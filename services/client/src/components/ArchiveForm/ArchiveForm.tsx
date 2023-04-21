@@ -1,5 +1,5 @@
 import React, {FC, useState, useEffect} from 'react';
-import {Button, Form, InputGroup, Spinner, Alert} from 'react-bootstrap';
+import {Button, Form, InputGroup, Spinner} from 'react-bootstrap';
 import DropzoneBox from '../DropzoneBox/DropzoneBox';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
@@ -7,11 +7,12 @@ import {useNavigate} from 'react-router-dom';
 import {useCreateMutation} from '../../redux/upload/upload-api';
 import {useGetFilesQuery} from '../../redux/storage/storage-api';
 import {CreateArchiveBody} from '../../redux/upload/types';
+import ErrorModal from '../ErrorModal/ErrorModal';
 
 const ArchiveForm: FC = () => {
   const navigate = useNavigate();
-  const [create, {isLoading, isSuccess, isError}] = useCreateMutation();
-  const [showAlert, setShowAlert] = useState(false);
+  const [create, {isLoading, isSuccess, isError, reset}] = useCreateMutation();
+  const [modalShow, setModalShow] = useState(false);
   const archiveFormats = ['zip', '7z', 'wim', 'tar', 'tar.gz', 'tar.xz', 'tar.bz2'];
   const [showPasswordField, setShowPasswordField] = useState(false);
   // @ts-ignore
@@ -50,16 +51,18 @@ const ArchiveForm: FC = () => {
     }
     values.files.forEach((file) => formData.append('files[]', file));
     await create(formData);
-    if (isSuccess) {
-      navigate('/uploading');
-    }
   }
 
   useEffect(() => {
-    if (isError) {
-      setShowAlert(true);
+    if (!isLoading) {
+      if (isSuccess) {
+        navigate('/uploading');
+      }
+      if (isError) {
+        setModalShow(true);
+      }
     }
-  }, [isError]);
+  }, [isError, isSuccess]);
 
   return (
     <Formik
@@ -69,12 +72,6 @@ const ArchiveForm: FC = () => {
     >
       {({handleSubmit, handleChange, values, touched, errors, setFieldValue}) => (
         <Form noValidate onSubmit={handleSubmit}>
-          {showAlert && (
-            <Alert variant="danger" onClose={() => setShowAlert(false)} dismissible>
-              <Alert.Heading>Error occurred!</Alert.Heading>
-              <p>Something went wrong while uploading. Please try again</p>
-            </Alert>
-          )}
           <h4 className={'mb-4'}>1. Select files to archive:</h4>
           <DropzoneBox setFieldValue={setFieldValue} invalidMessage={errors.files} />
           <h4 className={'mt-5 mb-3'}>2. Choose archive format</h4>
@@ -142,6 +139,14 @@ const ArchiveForm: FC = () => {
               </div>
             )}
           </Button>
+          <ErrorModal
+            message="Something went wrong while uploading file"
+            show={modalShow}
+            onHide={() => {
+              setModalShow(false);
+              reset();
+            }}
+          />
         </Form>
       )}
     </Formik>
