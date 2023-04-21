@@ -50,8 +50,8 @@ const FileItem: FC<{
     }
   }, [isLoading, isSuccess, isError]);
 
-  const deleteHandler = () => {
-    deleteFile({id: file._id});
+  const deleteHandler = async () => {
+    await deleteFile({id: file._id});
   };
 
   return (
