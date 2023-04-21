@@ -119,8 +119,13 @@ const ArchiveForm: FC = () => {
             </InputGroup>
           </Form.Group>
           <Button size={'lg'} type={'submit'} className={'px-5 d-block m-auto mt-5'}>
-            Upload all as {values.format.toUpperCase()}
-            {isLoading && <Spinner className="ms-2" animation="border" variant="dark" size="sm" />}
+            {!isLoading && <>Upload all as {values.format.toUpperCase()}</>}
+            {isLoading && (
+              <div className="d-flex align-items-center">
+                <Spinner className="me-2" animation="border" variant="dark" size="sm" />
+                Uploading...
+              </div>
+            )}
           </Button>
         </Form>
       )}

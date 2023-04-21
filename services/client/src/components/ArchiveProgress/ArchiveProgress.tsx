@@ -1,9 +1,9 @@
 import React, {FC} from 'react';
 import {ProgressBar, Spinner} from 'react-bootstrap';
-import {UploadingStatus} from '../../redux/upload/types';
+import {ArchivingStatus} from '../../redux/upload/types';
 
 interface UploadProgressProps {
-  status: UploadingStatus | undefined;
+  status: ArchivingStatus | undefined;
 }
 
 const UploadProgress: FC<UploadProgressProps> = ({status}) => {
@@ -12,7 +12,7 @@ const UploadProgress: FC<UploadProgressProps> = ({status}) => {
     content = (
       <div className={'d-flex flex-column align-items-center '}>
         <Spinner className={'mb-2'} />
-        <h3>Uploading</h3>
+        <h3>Archiving</h3>
       </div>
     );
   }
@@ -21,7 +21,7 @@ const UploadProgress: FC<UploadProgressProps> = ({status}) => {
     content = (
       <div className={'d-flex flex-column align-items-center '}>
         <i className="bi bi-x-circle fs-1"></i>
-        <h3>Error occurred while uploading file. Try again</h3>
+        <h3>Error occurred while archiving file. Try again</h3>
       </div>
     );
   }
@@ -30,7 +30,7 @@ const UploadProgress: FC<UploadProgressProps> = ({status}) => {
     content = (
       <div className={'d-flex flex-column align-items-center '}>
         <i className="bi bi-check fs-1"></i>
-        <h3>Uploaded</h3>
+        <h3>Archived</h3>
       </div>
     );
   }

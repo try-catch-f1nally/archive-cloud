@@ -1,8 +1,8 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
-import {UploadingStatus} from './types';
+import {ArchivingStatus} from './types';
 import {uploadApi} from './upload-api';
 
-const initialState = 'process' as UploadingStatus;
+const initialState = 'process' as ArchivingStatus;
 
 export const uploadSlice = createSlice({
   name: 'upload',
@@ -11,7 +11,7 @@ export const uploadSlice = createSlice({
   extraReducers: (builder) => {
     builder.addMatcher(
       uploadApi.endpoints.getStatus.matchFulfilled,
-      (state, {payload}: PayloadAction<UploadingStatus>) => payload
+      (state, {payload}: PayloadAction<ArchivingStatus>) => payload
     );
   }
 });

@@ -5,4 +5,4 @@ export interface CreateArchiveBody {
   password?: string;
 }
 
-export type UploadingStatus = 'process' | 'success' | 'error';
+export type ArchivingStatus = 'process' | 'success' | 'error';

@@ -1,17 +1,17 @@
 import React, {FC, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import UploadProgress from '../../components/UploadProgress/UploadProgress';
+import UploadProgress from '../../components/ArchiveProgress/ArchiveProgress';
 import {Container, Button, Spinner} from 'react-bootstrap';
 import {useAppSelector} from '../../hooks';
 import {selectIsAuth, selectToken} from '../../redux/auth/selectors';
 import {Navigate} from 'react-router-dom';
 import {useGetStatusQuery} from '../../redux/upload/upload-api';
-import {UploadingStatus} from '../../redux/upload/types';
+import {ArchivingStatus} from '../../redux/upload/types';
 
 const UploadPage: FC = () => {
   const navigate = useNavigate();
   const [pollingInterval, setPollingInterval] = useState<number | undefined>(300);
-  const [status, setStatus] = useState<UploadingStatus | undefined>();
+  const [status, setStatus] = useState<ArchivingStatus | undefined>();
   const isSuccessStatus = status === 'success';
 
   // @ts-ignore

@@ -1,5 +1,5 @@
 import {createApi, BaseQueryFn, FetchArgs} from '@reduxjs/toolkit/query/react';
-import {UploadingStatus} from './types';
+import {ArchivingStatus} from './types';
 import {authFetchBaseQuery} from '../auth/authFetchBaseQuery';
 
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -20,7 +20,7 @@ export const uploadApi = createApi({
         body
       })
     }),
-    getStatus: builder.query<UploadingStatus, void>({
+    getStatus: builder.query<ArchivingStatus, void>({
       query: () => ({
         url: 'upload/status',
         method: 'POST'
