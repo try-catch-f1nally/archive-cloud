@@ -22,7 +22,10 @@ const UploadPage: FC = () => {
 
   useEffect(() => {
     setStatus(data);
-    if (data === 'success' || data === 'error') {
+    if (data === 'process') {
+      setPollingInterval(300);
+    }
+    if ((data === 'success' || data === 'error') && isSuccess) {
       setPollingInterval(undefined);
     }
   }, [data]);
