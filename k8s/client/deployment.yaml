@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: trycatchf1nally/archive-cloud-client:v1.0.0
+          env:
+            - name: REACT_APP_API_GATEWAY
+              value: http://localhost

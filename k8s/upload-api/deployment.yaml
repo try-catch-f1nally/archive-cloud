@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upload-api
+  labels:
+    app: upload-api
+spec:
+  selector:
+    matchLabels:
+      app: upload-api
+  template:
+    metadata:
+      labels:
+        app: upload-api
+    spec:
+      containers:
+        - name: upload-api
+          image: trycatchf1nally/archive-cloud-upload-api:v1.0.0
+          env:
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: STORAGE_API_ORIGIN
+              value: http://storage-api
+            - name: FRONTEND_ORIGIN
+              value: http://localhost
+            - name: AUTH_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auth-keys
+                  key: public-key
