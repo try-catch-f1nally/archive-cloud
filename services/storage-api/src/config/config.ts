@@ -1,0 +1,31 @@
+import {processEnvValidator} from '@try-catch-f1nally/express-microservice';
+import Config, {EnvVars} from './types/config.interface';
+
+const envVars = processEnvValidator<EnvVars>({
+  type: 'object',
+  properties: {
+    PORT: {type: 'integer', default: 3000},
+    MONGODB_HOST: {type: 'string', format: 'hostname'},
+    MONGODB_PORT: {type: 'integer', default: 27017},
+    AUTH_PUBLIC_KEY: {type: 'string'},
+    FRONTEND_ORIGIN: {type: 'string'}
+  },
+  required: ['MONGODB_HOST', 'AUTH_PUBLIC_KEY', 'FRONTEND_ORIGIN']
+});
+
+export const config: Config = {
+  port: envVars.PORT,
+  mongodb: {
+    uri: `mongodb://${envVars.MONGODB_HOST}:${envVars.MONGODB_PORT}/storage-api`
+  },
+  auth: {
+    publicKey: envVars.AUTH_PUBLIC_KEY
+  },
+  storage: {
+    path: './archives'
+  },
+  cors: {
+    origin: envVars.FRONTEND_ORIGIN,
+    credentials: true
+  }
+};

@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-server
+  labels:
+    app: static-server
+spec:
+  selector:
+    matchLabels:
+      app: static-server
+  template:
+    metadata:
+      labels:
+        app: static-server
+    spec:
+      containers:
+        - name: static-server
+          image: trycatchf1nally/archive-cloud-static-server:v1.0.0

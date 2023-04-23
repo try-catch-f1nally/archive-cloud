@@ -1,0 +1,130 @@
+version: "3.8"
+
+name: archive-cloud
+
+services:
+  client:
+    image: node:18-alpine
+    working_dir: /usr/src/app
+    command: sh -c "npm i && npm start"
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      WATCHPACK_POLLING: true # for hot reloading; use CHOKIDAR_USEPOLLING for linux
+      REACT_APP_API_GATEWAY: ${API_GATEWAY}
+    volumes:
+      - ../services/client:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - client-network
+
+  auth-api:
+    image: node:18-alpine
+    working_dir: /usr/src/app
+    command: sh -c "npm i && npm run dev"
+    environment:
+      MONGODB_HOST: mongodb
+      FRONTEND_ORIGIN: http://localhost:8080
+      AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
+      AUTH_PRIVATE_KEY: ${AUTH_PRIVATE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ../services/auth-api:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - auth-api-network
+    depends_on:
+      - mongodb
+
+  upload-api:
+    image: node:18-alpine
+    working_dir: /usr/src/app
+    command: sh -c "npm i && apk add p7zip && npm run dev"
+    environment:
+      REDIS_HOST: redis
+      FRONTEND_ORIGIN: http://localhost:8080
+      STORAGE_API_ORIGIN: http://storage-api:3000
+      AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
+      USE_SYSTEM_7ZA: true
+    volumes:
+      - ../services/upload-api:/usr/src/app
+      - /usr/src/app/node_modules
+      - uploads:/usr/src/app/uploads
+      - archives:/usr/src/app/archives
+    networks:
+      - upload-api-network
+      - upload-api-storage-api-network
+    depends_on:
+      - redis
+
+  storage-api:
+    image: node:18-alpine
+    working_dir: /usr/src/app
+    command: sh -c "npm i && npm run dev"
+    environment:
+      MONGODB_HOST: mongodb
+      FRONTEND_ORIGIN: http://localhost:8080
+      AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
+    volumes:
+      - ../services/storage-api:/usr/src/app
+      - /usr/src/app/node_modules
+      - archives:/usr/src/app/archives
+    networks:
+      - storage-api-network
+      - upload-api-storage-api-network
+    depends_on:
+      - mongodb
+
+  reverse-proxy:
+    image: nginx:1.24.0
+    ports:
+      - "3000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - client-network
+      - auth-api-network
+      - upload-api-network
+      - storage-api-network
+      - static-server-network
+
+  static-server:
+    image: nginx:1.24.0
+    volumes:
+      - ../services/static-server/nginx.conf:/etc/nginx/nginx.conf:ro
+      - archives:/var/www/static/archives/
+    networks:
+      - static-server-network
+
+  mongodb:
+    image: mongo:6
+    command:
+      - '--logpath'
+      - '/var/log/mongodb/mongod.log'
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - auth-api-network
+      - storage-api-network
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis-data:/data
+    networks:
+      - upload-api-network
+
+volumes:
+  archives:
+  uploads:
+  mongodb-data:
+  redis-data:
+
+networks:
+  client-network:
+  auth-api-network:
+  upload-api-network:
+  storage-api-network:
+  static-server-network:
+  upload-api-storage-api-network:
