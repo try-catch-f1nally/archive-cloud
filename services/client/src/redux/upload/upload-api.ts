@@ -3,7 +3,7 @@ import {ArchivingStatus} from './types';
 import {authFetchBaseQuery} from '../auth/authFetchBaseQuery';
 
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-const baseUrl = process.env.REACT_APP_UPLOAD_API_URL;
+const baseUrl = `${process.env.REACT_APP_API_GATEWAY}/api/upload`;
 
 export const uploadApi = createApi({
   reducerPath: 'api/upload',

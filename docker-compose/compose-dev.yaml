@@ -7,26 +7,25 @@ services:
     image: node:18-alpine
     working_dir: /usr/src/app
     command: sh -c "npm i && npm start"
+    ports:
+      - "8080:8080"
     environment:
+      PORT: 8080
       WATCHPACK_POLLING: true # for hot reloading; use CHOKIDAR_USEPOLLING for linux
-      REACT_APP_AUTH_API_URL: http://localhost:8080/auth-api
-      REACT_APP_UPLOAD_API_URL: http://localhost:8080/upload-api
-      REACT_APP_STORAGE_API_URL: http://localhost:8080/storage-api
-      REACT_APP_STATIC_SERVER_URL: http://localhost:8081
+      REACT_APP_API_GATEWAY: ${API_GATEWAY}
     volumes:
       - ../services/client:/usr/src/app
       - /usr/src/app/node_modules
-    ports:
-      - "3000:3000"
+    networks:
+      - client-network
 
   auth-api:
     image: node:18-alpine
     working_dir: /usr/src/app
     command: sh -c "npm i && npm run dev"
     environment:
-      PORT: 3000
-      MONGODB_URI: mongodb://mongodb:27017/auth-api
-      FRONTEND_ORIGIN: http://localhost:3000
+      MONGODB_HOST: mongodb
+      FRONTEND_ORIGIN: http://localhost:8080
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
       AUTH_PRIVATE_KEY: ${AUTH_PRIVATE_KEY}
       JWT_SECRET: ${JWT_SECRET}
@@ -41,12 +40,10 @@ services:
   upload-api:
     image: node:18-alpine
     working_dir: /usr/src/app
-
     command: sh -c "npm i && apk add p7zip && npm run dev"
     environment:
-      PORT: 3000
       REDIS_HOST: redis
-      FRONTEND_ORIGIN: http://localhost:3000
+      FRONTEND_ORIGIN: http://localhost:8080
       STORAGE_API_ORIGIN: http://storage-api:3000
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
       USE_SYSTEM_7ZA: true
@@ -66,9 +63,8 @@ services:
     working_dir: /usr/src/app
     command: sh -c "npm i && npm run dev"
     environment:
-      PORT: 3000
-      MONGODB_URI: mongodb://mongodb:27017/storage-api
-      FRONTEND_ORIGIN: http://localhost:3000
+      MONGODB_HOST: mongodb
+      FRONTEND_ORIGIN: http://localhost:8080
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
     volumes:
       - ../services/storage-api:/usr/src/app
@@ -83,21 +79,23 @@ services:
   reverse-proxy:
     image: nginx:1.24.0
     ports:
-      - "8080:80"
+      - "3000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
+      - client-network
       - auth-api-network
       - upload-api-network
       - storage-api-network
+      - static-server-network
 
-  nginx:
+  static-server:
     image: nginx:1.24.0
-    ports:
-      - "8081:80"
     volumes:
-      - ../services/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../services/static-server/nginx.conf:/etc/nginx/nginx.conf:ro
       - archives:/var/www/static/archives/
+    networks:
+      - static-server-network
 
   mongodb:
     image: mongo:6
@@ -124,7 +122,9 @@ volumes:
   redis-data:
 
 networks:
+  client-network:
   auth-api-network:
   upload-api-network:
   storage-api-network:
+  static-server-network:
   upload-api-storage-api-network:

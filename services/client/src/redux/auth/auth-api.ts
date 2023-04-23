@@ -2,7 +2,7 @@ import {BaseQueryFn, createApi, FetchArgs, fetchBaseQuery} from '@reduxjs/toolki
 import {AuthResponse, SignupBody, LoginBody} from './types';
 
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-const baseUrl = process.env.REACT_APP_AUTH_API_URL;
+const baseUrl = `${process.env.REACT_APP_API_GATEWAY}/api/auth`;
 
 export const authApi = createApi({
   reducerPath: 'api/auth',

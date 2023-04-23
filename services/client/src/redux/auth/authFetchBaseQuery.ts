@@ -8,7 +8,8 @@ type AuthFetchBaseQueryType = (
   options: FetchBaseQueryArgs
 ) => BaseQueryFn<string | FetchArgs, unknown, unknown>;
 
-const baseUrl = process.env.REACT_APP_AUTH_API_URL;
+// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+const baseUrl = `${process.env.REACT_APP_API_GATEWAY}/api/auth`;
 
 export const authFetchBaseQuery: AuthFetchBaseQueryType = (options) => {
   const baseQuery = fetchBaseQuery({

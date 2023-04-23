@@ -1,6 +1,6 @@
 import {Application, Log4jsService, AjvService, AuthMiddleware} from '@try-catch-f1nally/express-microservice';
 import {config} from './config/config';
-import MongoDb from './mongodb';
+import MongoDb from './mongoDb';
 
 import ArchiveModel from './storage/archive.model';
 import StorageValidatorImpl from './storage/storage.validator';

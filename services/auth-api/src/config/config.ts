@@ -1,5 +1,3 @@
-import * as dotenv from 'dotenv';
-dotenv.config({path: '.env.dev'});
 import {processEnvValidator} from '@try-catch-f1nally/express-microservice';
 import Config, {EnvVars} from './types/config.interface';
 
@@ -7,19 +5,20 @@ const envVars = processEnvValidator<EnvVars>({
   type: 'object',
   properties: {
     PORT: {type: 'integer', default: 3000},
-    MONGODB_URI: {type: 'string', format: 'uri'},
+    MONGODB_HOST: {type: 'string', format: 'hostname'},
+    MONGODB_PORT: {type: 'integer', default: 27017},
     AUTH_PUBLIC_KEY: {type: 'string'},
     AUTH_PRIVATE_KEY: {type: 'string'},
     JWT_SECRET: {type: 'string'},
     FRONTEND_ORIGIN: {type: 'string'}
   },
-  required: ['MONGODB_URI', 'AUTH_PUBLIC_KEY', 'AUTH_PRIVATE_KEY', 'JWT_SECRET', 'FRONTEND_ORIGIN']
+  required: ['MONGODB_HOST', 'AUTH_PUBLIC_KEY', 'AUTH_PRIVATE_KEY', 'JWT_SECRET', 'FRONTEND_ORIGIN']
 });
 
 export const config: Config = {
   port: envVars.PORT,
   mongodb: {
-    uri: envVars.MONGODB_URI
+    uri: `mongodb://${envVars.MONGODB_HOST}:${envVars.MONGODB_PORT}/auth-api`
   },
   auth: {
     publicKey: envVars.AUTH_PUBLIC_KEY,

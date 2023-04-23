@@ -9,6 +9,7 @@ RUN npm run build
 FROM node:18-alpine AS production
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
+ENV USE_SYSTEM_7ZA true
 RUN apk add --no-cache p7zip
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json .

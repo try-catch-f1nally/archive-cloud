@@ -54,6 +54,8 @@ const FileItem: FC<{
     await deleteFile({id: file._id});
   };
 
+  const staticServerUrl = `${process.env.REACT_APP_API_GATEWAY}/static-server`;
+
   return (
     <ListGroup.Item
       className={'d-flex justify-content-start align-items-center'}
@@ -77,7 +79,7 @@ const FileItem: FC<{
             size={'sm'}
             className={'me-3'}
             disabled={isLoading}
-            link={process.env.REACT_APP_STATIC_SERVER_URL + pathname.replace('/archives', '')}
+            link={staticServerUrl + pathname}
           />
           <DeleteButton onClick={deleteHandler} size={'sm'} isLoading={isLoading} />
         </div>

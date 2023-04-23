@@ -47,7 +47,6 @@
   },
   "dependencies": {
     "@try-catch-f1nally/express-microservice": "~1.3.1",
-    "dotenv": "~16.0.3",
     "mongoose": "~7.0.2"
   }
 }
