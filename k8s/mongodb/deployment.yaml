@@ -16,3 +16,10 @@ spec:
       containers:
         - name: mongodb
           image: mongo:6
+          volumeMounts:
+            - mountPath: /data/db
+              name: data-mongodb
+      volumes:
+        - name: data-mongodb
+          persistentVolumeClaim:
+            claimName: mongodb-volume-claim

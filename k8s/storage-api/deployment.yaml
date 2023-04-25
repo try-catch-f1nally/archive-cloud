@@ -16,6 +16,9 @@ spec:
       containers:
         - name: storage-api
           image: trycatchf1nally/archive-cloud-storage-api:v1.0.0
+          volumeMounts:
+            - mountPath: /usr/src/app/archives
+              name: archives-data
           env:
             - name: MONGODB_HOST
               value: mongodb
@@ -28,3 +31,7 @@ spec:
                 secretKeyRef:
                   name: auth-keys
                   key: public-key
+      volumes:
+        - name: archives-data
+          persistentVolumeClaim:
+            claimName: archives-volume-claim
