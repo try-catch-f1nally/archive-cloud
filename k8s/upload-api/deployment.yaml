@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: upload-api
-          image: trycatchf1nally/archive-cloud-upload-api:v1.0.0
+          image: trycatchf1nally/archive-cloud-upload-api:1.0.0
           volumeMounts:
             - mountPath: /usr/src/app/uploads
               name: uploads-data

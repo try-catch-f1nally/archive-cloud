@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auth-api
-          image: trycatchf1nally/archive-cloud-auth-api:v1.0.0
+          image: trycatchf1nally/archive-cloud-auth-api:1.0.0
           env:
             - name: MONGODB_HOST
               value: mongodb
