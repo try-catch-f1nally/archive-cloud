@@ -13,9 +13,23 @@ spec:
       labels:
         app: storage-api
     spec:
+      initContainers:
+        - name: migrate-mongo
+          image: trycatchf1nally/archive-cloud-storage-api-mongodb-migration:1.0.0
+          volumeMounts:
+            - mountPath: /app/archives
+              name: archives-data
+          env:
+            - name: MONGODB_HOST
+              value: mongodb
+            - name: MONGODB_PORT
+              value: "27017"
       containers:
         - name: storage-api
-          image: trycatchf1nally/archive-cloud-storage-api:v1.0.0
+          image: trycatchf1nally/archive-cloud-storage-api:1.0.0
+          volumeMounts:
+            - mountPath: /usr/src/app/archives
+              name: archives-data
           env:
             - name: MONGODB_HOST
               value: mongodb
@@ -28,3 +42,7 @@ spec:
                 secretKeyRef:
                   name: auth-keys
                   key: public-key
+      volumes:
+        - name: archives-data
+          persistentVolumeClaim:
+            claimName: archives-volume-claim

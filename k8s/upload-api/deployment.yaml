@@ -15,7 +15,12 @@ spec:
     spec:
       containers:
         - name: upload-api
-          image: trycatchf1nally/archive-cloud-upload-api:v1.0.0
+          image: trycatchf1nally/archive-cloud-upload-api:1.0.0
+          volumeMounts:
+            - mountPath: /usr/src/app/uploads
+              name: uploads-data
+            - mountPath: /usr/src/app/archives
+              name: archives-data
           env:
             - name: REDIS_HOST
               value: redis
@@ -30,3 +35,10 @@ spec:
                 secretKeyRef:
                   name: auth-keys
                   key: public-key
+      volumes:
+        - name: uploads-data
+          persistentVolumeClaim:
+            claimName: uploads-volume-claim
+        - name: archives-data
+          persistentVolumeClaim:
+            claimName: archives-volume-claim

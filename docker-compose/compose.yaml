@@ -9,7 +9,7 @@ services:
       args:
         REACT_APP_API_GATEWAY: ${API_GATEWAY}
     networks:
-      - client-network
+      - client-reverse-proxy
 
   auth-api:
     build: ../services/auth-api
@@ -20,7 +20,8 @@ services:
       AUTH_PRIVATE_KEY: ${AUTH_PRIVATE_KEY}
       JWT_SECRET: ${JWT_SECRET}
     networks:
-      - auth-api-network
+      - auth-api-reverse-proxy
+      - auth-api-mongodb
     depends_on:
       - mongodb
 
@@ -35,10 +36,12 @@ services:
       - uploads:/usr/src/app/uploads
       - archives:/usr/src/app/archives
     networks:
-      - upload-api-network
-      - upload-api-storage-api-network
+      - upload-api-reverse-proxy
+      - upload-api-storage-api
+      - upload-api-redis
     depends_on:
       - redis
+      - storage-api
 
   storage-api:
     build: ../services/storage-api
@@ -49,10 +52,12 @@ services:
     volumes:
       - archives:/usr/src/app/archives
     networks:
-      - storage-api-network
-      - upload-api-storage-api-network
+      - storage-api-reverse-proxy
+      - upload-api-storage-api
+      - storage-api-mongodb
     depends_on:
       - mongodb
+      - storage-api-mongodb-migration
 
   reverse-proxy:
     image: nginx:1.24.0
@@ -61,18 +66,29 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
-      - client-network
-      - auth-api-network
-      - upload-api-network
-      - storage-api-network
-      - static-server-network
+      - client-reverse-proxy
+      - auth-api-reverse-proxy
+      - upload-api-reverse-proxy
+      - storage-api-reverse-proxy
+      - static-server-reverse-proxy
 
   static-server:
     build: ../services/static-server
     volumes:
       - archives:/var/www/static/archives/
     networks:
-      - static-server-network
+      - static-server-reverse-proxy
+
+  storage-api-mongodb-migration:
+    build: ../services/storage-api/migrate-mongo
+    environment:
+      MONGODB_HOST: mongodb
+    volumes:
+      - archives:/app/archives
+    networks:
+      - storage-api-mongodb-migration-mongodb
+    depends_on:
+      - mongodb
 
   mongodb:
     image: mongo:6
@@ -82,15 +98,16 @@ services:
     volumes:
       - mongodb-data:/data/db
     networks:
-      - auth-api-network
-      - storage-api-network
+      - auth-api-mongodb
+      - storage-api-mongodb
+      - storage-api-mongodb-migration-mongodb
 
   redis:
     image: redis:7
     volumes:
       - redis-data:/data
     networks:
-      - upload-api-network
+      - upload-api-redis
 
 volumes:
   archives:
@@ -99,9 +116,13 @@ volumes:
   redis-data:
 
 networks:
-  client-network:
-  auth-api-network:
-  upload-api-network:
-  storage-api-network:
-  static-server-network:
-  upload-api-storage-api-network:
+  client-reverse-proxy:
+  auth-api-reverse-proxy:
+  upload-api-reverse-proxy:
+  storage-api-reverse-proxy:
+  static-server-reverse-proxy:
+  upload-api-storage-api:
+  auth-api-mongodb:
+  storage-api-mongodb:
+  storage-api-mongodb-migration-mongodb:
+  upload-api-redis:

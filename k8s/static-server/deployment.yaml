@@ -15,4 +15,11 @@ spec:
     spec:
       containers:
         - name: static-server
-          image: trycatchf1nally/archive-cloud-static-server:v1.0.0
+          image: trycatchf1nally/archive-cloud-static-server:1.0.0
+          volumeMounts:
+            - mountPath: /var/www/static/archives
+              name: archives-data
+      volumes:
+        - name: archives-data
+          persistentVolumeClaim:
+            claimName: archives-volume-claim
