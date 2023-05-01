@@ -19,3 +19,8 @@ export type RegisterData = {
   email: string;
   password: string;
 };
+
+export type UpdateData = {
+  email: string;
+  password: string;
+}

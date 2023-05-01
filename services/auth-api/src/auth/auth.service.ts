@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import {BadRequestError, UnauthorizedError, TokenPayload} from '@try-catch-f1nally/express-microservice';
 import AuthService from './types/auth.service.interface';
 import Config from '../config/types/config.interface';
-import UserModel from '../user/types/user.model.interface';
-import {LoginData, RegisterData} from './types/auth.types';
+import UserModel, {User} from '../user/types/user.model.interface';
+import {LoginData, RegisterData, UpdateData, UserData} from './types/auth.types';
 
 export default class AuthServiceImpl implements AuthService {
   private _config: Config;
@@ -116,5 +116,36 @@ export default class AuthServiceImpl implements AuthService {
       accessToken: jwt.sign(payload, privateKey, {algorithm: 'ES256', expiresIn: accessTokenTtlInSeconds}),
       refreshToken: jwt.sign(payload, refreshSecret, {expiresIn: refreshTokenTtlInSeconds})
     };
+  }
+
+  async get(refreshToken: string){
+    const payload = await this._decodeExpiredToken(refreshToken, this._config.auth.refreshSecret);
+    if (payload === null) {
+      throw new UnauthorizedError('Invalid refresh token provided');
+    }
+
+    const user = await this._userModel.findById(payload.user.id);
+    if (!user) {
+      throw new BadRequestError(`User with id ${payload.user.id} not found`);
+    }
+
+    return user;
+  }
+
+  async update(refreshToken: string, updateData: UpdateData) {
+    const payload = await this._decodeExpiredToken(refreshToken, this._config.auth.refreshSecret);
+    if (payload === null) {
+      throw new UnauthorizedError('Invalid refresh token provided');
+    }
+
+    const user = await this._userModel.findById(payload.user.id);
+    if (!user) {
+      throw new BadRequestError(`User with id ${payload.user.id} not found`);
+    }
+
+    user.password = updateData.password;
+    user.email = updateData.email;
+
+    return user;
   }
 }

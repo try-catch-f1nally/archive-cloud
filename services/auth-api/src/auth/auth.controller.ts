@@ -34,6 +34,8 @@ export default class AuthController implements Controller {
     this.router.post('/logout', this._logout.bind(this));
     this.router.post('/refresh', this._refresh.bind(this));
     this.router.delete('/delete', this._delete.bind(this));
+    this.router.get('/', this._get.bind(this));
+    this.router.patch('/', this._update.bind(this));
   }
 
   private async _register(req: Request, res: Response, next: NextFunction) {
@@ -99,6 +101,32 @@ export default class AuthController implements Controller {
       this._removeTokenFromCookie(res);
       await this._authService.delete(refreshToken);
       res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  private async _get(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {refreshToken} = req.cookies;
+      if (!refreshToken) {
+        throw new UnauthorizedError('Refresh token is missing');
+      }
+      const {email} = await this._authService.get(refreshToken);
+      return res.json(email);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  private async _update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {refreshToken} = req.cookies;
+      if (!refreshToken) {
+        throw new UnauthorizedError('Refresh token is missing');
+      }
+      const {email} = await this._authService.update(refreshToken, req.body);
+      return res.json({email});
     } catch (error) {
       next(error);
     }
