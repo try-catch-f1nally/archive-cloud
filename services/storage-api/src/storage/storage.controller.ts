@@ -39,6 +39,7 @@ export default class StorageController implements Controller {
     this.router.get('/archives', this._authMiddleware.middleware, this._getUserArchives.bind(this));
     this.router.post('/archives', this._discoverArchive.bind(this));
     this.router.delete('/archives/:id', this._authMiddleware.middleware, this._deleteArchive.bind(this));
+    this.router.put('/archives/:id', this._authMiddleware.middleware, this._updateArchive.bind(this));
   }
 
   private async _getUserArchives(req: Request, res: Response, next: NextFunction) {
@@ -53,6 +54,15 @@ export default class StorageController implements Controller {
   private async _deleteArchive(req: Request, res: Response, next: NextFunction) {
     try {
       await this._storageService.deleteArchive(req.params.id);
+      return res.sendStatus(204);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  private async _updateArchive(req: Request, res: Response, next: NextFunction) {
+    try {
+      await this._storageService.updateArchive(req.params.id, req.body.name);
       return res.sendStatus(204);
     } catch (error) {
       next(error);

@@ -27,6 +27,18 @@ export default class StorageServiceImpl implements StorageService {
     await fs.rm(archiveDestination, {recursive: true, force: true});
   }
 
+  async updateArchive(id: string, name: string): Promise<void> {
+    const archive = await this._archiveModel.findById(id);
+    if (!archive) {
+      throw new BadRequestError('No archive found');
+    }
+    const archiveDestination = path.join(this._config.storage.path, archive.userId, archive.name);
+    const newArchiveDestination = path.join(this._config.storage.path, archive.userId, name);
+    await fs.rename(archiveDestination, newArchiveDestination);
+    archive.name = name;
+    await archive.save();
+  }
+
   async discoverArchive(userId: string, name: string): Promise<void> {
     const archivePath = path.join(this._config.storage.path, userId, name);
     await this._archiveModel.create({
