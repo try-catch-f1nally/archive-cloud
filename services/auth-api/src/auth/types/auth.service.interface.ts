@@ -5,4 +5,5 @@ export default interface AuthService {
   login(loginData: LoginData): Promise<UserData>;
   logout(refreshToken: string): Promise<void>;
   refresh(refreshToken: string): Promise<UserData>;
+  delete(userId: string): Promise<void>;
 }

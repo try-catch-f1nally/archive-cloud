@@ -80,6 +80,14 @@ export default class AuthServiceImpl implements AuthService {
     return {...tokens, userId: user.id};
   }
 
+  async delete(userId: string) {
+    const user = await this._userModel.findById(userId);
+    if (!user) {
+      throw new BadRequestError(`User with id ${userId} not found`);
+    }
+    await user.deleteOne();
+  }
+
   _isTokenPayload(decoded: string | jwt.JwtPayload | null): decoded is TokenPayload {
     return (
       // prettier-ignore
