@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{ .Values.selector | toYaml }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ .Values.selector | toYaml }}
+  template:
+    metadata:
+      labels:
+        {{ .Values.selector | toYaml }}
+    spec:
+      containers:
+        - name: static-server
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          volumeMounts:
+            - mountPath: /var/www/static/archives
+              name: archives-data
+      volumes:
+        - name: archives-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-archives-volume-claim

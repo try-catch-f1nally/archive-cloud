@@ -16,6 +16,3 @@ spec:
       containers:
         - name: client
           image: trycatchf1nally/archive-cloud-client:1.0.0
-          env:
-            - name: REACT_APP_API_GATEWAY
-              value: http://localhost

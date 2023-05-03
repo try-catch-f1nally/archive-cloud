@@ -1,0 +1,11 @@
+apiVersion: v2
+version: 0.1.0
+name: archive-cloud
+appVersion: "0.1"
+dependencies:
+  - name: mongodb
+    version: 13.10.1
+    repository: https://charts.bitnami.com/bitnami
+  - name: redis
+    version: 17.10.1
+    repository: https://charts.bitnami.com/bitnami
