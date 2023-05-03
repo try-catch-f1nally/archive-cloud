@@ -1,0 +1,15 @@
+replicaCount: 1
+
+selector:
+  app: archive-cloud-static-server
+
+image:
+  name: trycatchf1nally/archive-cloud-static-server
+  tag: 1.0.0
+
+service:
+  port: 80
+  targetPort: 80
+
+ingress:
+  path: /static-server

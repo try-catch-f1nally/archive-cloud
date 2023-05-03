@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{ .Values.selector | toYaml }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ .Values.selector | toYaml }}
+  template:
+    metadata:
+      labels:
+        {{ .Values.selector | toYaml }}
+    spec:
+      containers:
+        - name: auth-api
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          env:
+            - name: MONGODB_HOST
+              value: {{ .Values.configs.MONGODB_HOST }}
+            - name: MONGODB_PORT
+              value: {{ .Values.configs.MONGODB_PORT | quote }}
+            - name: FRONTEND_ORIGIN
+              value: {{ .Values.configs.FRONTEND_ORIGIN }}
+            - name: AUTH_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-auth-keys
+                  key: public-key
+            - name: AUTH_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-auth-keys
+                  key: private-key
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-auth-keys
+                  key: jwt-secret

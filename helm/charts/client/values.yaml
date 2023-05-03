@@ -1,0 +1,15 @@
+replicaCount: 1
+
+selector:
+  app: archive-cloud-client
+
+image:
+  name: trycatchf1nally/archive-cloud-client
+  tag: 1.0.0
+
+service:
+  port: 80
+  targetPort: 80
+
+ingress:
+  path: /

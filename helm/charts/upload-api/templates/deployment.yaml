@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{ .Values.selector | toYaml }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ .Values.selector | toYaml }}
+  template:
+    metadata:
+      labels:
+        {{ .Values.selector | toYaml }}
+    spec:
+      containers:
+        - name: upload-api
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          volumeMounts:
+            - mountPath: /usr/src/app/uploads
+              name: uploads-data
+            - mountPath: /usr/src/app/archives
+              name: archives-data
+          env:
+            - name: REDIS_HOST
+              value: {{ .Values.configs.REDIS_HOST }}
+            - name: REDIS_PORT
+              value: {{ .Values.configs.REDIS_PORT | quote }}
+            - name: STORAGE_API_ORIGIN
+              value: http://{{ .Release.Name }}-storage-api
+            - name: FRONTEND_ORIGIN
+              value: {{ .Values.configs.FRONTEND_ORIGIN }}
+            - name: AUTH_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-auth-keys
+                  key: public-key
+      volumes:
+        - name: uploads-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-uploads-volume-claim
+        - name: archives-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-archives-volume-claim

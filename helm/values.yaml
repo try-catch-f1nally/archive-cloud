@@ -1,0 +1,18 @@
+mongodb:
+  fullnameOverride: archive-cloud-mongodb
+  replicaCount: 1
+  auth:
+    enabled: false
+  persistence:
+    size: 2Gi
+    mountPath: /data/db
+
+redis:
+  fullnameOverride: archive-cloud-redis
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      size: 1Gi
+    kind: Deployment
