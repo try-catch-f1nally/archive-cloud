@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ include "common.fullname" . }}-destination
+spec:
+  host: {{ include "common.fullname" . }}
+  trafficPolicy:
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 15s
+      baseEjectionTime: 40s
+      maxEjectionPercent: 50
