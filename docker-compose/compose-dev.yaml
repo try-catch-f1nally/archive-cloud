@@ -44,6 +44,7 @@ services:
     command: sh -c "npm i && apk add p7zip && npm run dev"
     environment:
       REDIS_HOST: redis
+      KAFKA_HOST: kafka
       FRONTEND_ORIGIN: http://localhost:8080
       STORAGE_API_ORIGIN: http://storage-api:3000
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
@@ -57,9 +58,10 @@ services:
       - upload-api-reverse-proxy
       - upload-api-storage-api
       - upload-api-redis
+      - upload-api-kafka
     depends_on:
       - redis
-      - storage-api
+      - kafka
 
   storage-api:
     image: node:18-alpine
@@ -67,6 +69,7 @@ services:
     command: sh -c "npm i && npm run dev"
     environment:
       MONGODB_HOST: mongodb
+      KAFKA_HOST: kafka
       FRONTEND_ORIGIN: http://localhost:8080
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
     volumes:
@@ -77,9 +80,11 @@ services:
       - storage-api-reverse-proxy
       - upload-api-storage-api
       - storage-api-mongodb
+      - storage-api-kafka
     depends_on:
       - mongodb
       - storage-api-mongodb-migration
+      - kafka
 
   reverse-proxy:
     image: nginx:1.24.0
@@ -136,11 +141,37 @@ services:
     networks:
       - upload-api-redis
 
+  zookeeper:
+    image: bitnami/zookeeper:3
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: yes
+    volumes:
+      - zookeeper-data:/bitnami/zookeeper
+    networks:
+      - zookeeper-kafka
+
+  kafka:
+    image: bitnami/kafka:3
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    volumes:
+      - kafka-data:/bitnami/kafka
+    networks:
+      - zookeeper-kafka
+      - storage-api-kafka
+      - upload-api-kafka
+    depends_on:
+      - zookeeper
+
 volumes:
   archives:
   uploads:
   mongodb-data:
   redis-data:
+  zookeeper-data:
+  kafka-data:
 
 networks:
   client-reverse-proxy:
@@ -153,3 +184,6 @@ networks:
   storage-api-mongodb:
   storage-api-mongodb-migration-mongodb:
   upload-api-redis:
+  zookeeper-kafka:
+  storage-api-kafka:
+  upload-api-kafka:

@@ -9,7 +9,9 @@ const envVars = processEnvValidator<EnvVars>({
     FRONTEND_ORIGIN: {type: 'string'},
     STORAGE_API_ORIGIN: {type: 'string'},
     REDIS_HOST: {type: 'string', format: 'hostname'},
-    REDIS_PORT: {type: 'integer', default: 6379}
+    REDIS_PORT: {type: 'integer', default: 6379},
+    KAFKA_HOST: {type: 'string', format: 'hostname'},
+    KAFKA_PORT: {type: 'integer', default: 9092}
   },
   required: ['AUTH_PUBLIC_KEY', 'FRONTEND_ORIGIN', 'REDIS_HOST']
 });
@@ -23,6 +25,12 @@ export const config: Config = {
     connectionOptions: {
       host: envVars.REDIS_HOST,
       port: envVars.REDIS_PORT
+    }
+  },
+  kafka: {
+    connectionOptions: {
+      clientId: 'upload-api',
+      brokers: [`${envVars.KAFKA_HOST}:${envVars.KAFKA_PORT}`]
     }
   },
   'storage-api': {
