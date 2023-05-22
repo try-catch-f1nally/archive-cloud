@@ -27,6 +27,10 @@ spec:
               value: {{ .Values.configs.REDIS_HOST }}
             - name: REDIS_PORT
               value: {{ .Values.configs.REDIS_PORT | quote }}
+            - name: KAFKA_HOST
+              value: {{ .Values.configs.KAFKA_HOST }}
+            - name: KAFKA_PORT
+              value: {{ .Values.configs.KAFKA_PORT | quote }}
             - name: STORAGE_API_ORIGIN
               value: http://{{ .Release.Name }}-storage-api
             - name: FRONTEND_ORIGIN

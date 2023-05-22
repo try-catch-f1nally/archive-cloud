@@ -16,3 +16,12 @@ redis:
     persistence:
       size: 1Gi
     kind: Deployment
+
+kafka:
+  fullnameOverride: archive-cloud-kafka
+  numPartitions: 3
+  autoCreateTopicsEnable: false
+  provisioning:
+    enabled: true
+    topics:
+      - name: storage
