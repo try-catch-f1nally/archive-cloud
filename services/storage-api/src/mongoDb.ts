@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import {Database, Logger} from '@try-catch-f1nally/express-microservice';
+import {Connectable, Logger} from '@try-catch-f1nally/express-microservice';
 import Config from './config/types/config.interface';
 
-export default class MongoDb implements Database {
+export default class MongoDb implements Connectable {
   private _config: Config;
   private _logger: Logger;
 
@@ -17,7 +17,7 @@ export default class MongoDb implements Database {
     this._logger.info('Successfully connected to MongoDB');
   }
 
-  async close() {
+  async disconnect() {
     this._logger.info('Disconnecting from DB...');
     await mongoose.connection.close();
     this._logger.info('Successfully disconnected from MongoDB');

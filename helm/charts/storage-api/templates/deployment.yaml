@@ -16,7 +16,7 @@ spec:
     spec:
       initContainers:
         - name: migrate-mongo
-          image: {{ .Values.migrations.image.name }}:{{ .Values.image.tag }}
+          image: {{ .Values.migrations.image.name }}:{{ .Values.migrations.image.tag }}
           volumeMounts:
             - mountPath: /app/archives
               name: archives-data
@@ -36,6 +36,10 @@ spec:
               value: {{ .Values.configs.MONGODB_HOST }}
             - name: MONGODB_PORT
               value: {{ .Values.configs.MONGODB_PORT | quote }}
+            - name: KAFKA_HOST
+              value: {{ .Values.configs.KAFKA_HOST }}
+            - name: KAFKA_PORT
+              value: {{ .Values.configs.KAFKA_PORT | quote }}
             - name: FRONTEND_ORIGIN
               value: {{ .Values.configs.FRONTEND_ORIGIN }}
             - name: AUTH_PUBLIC_KEY

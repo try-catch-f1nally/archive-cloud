@@ -9,3 +9,6 @@ dependencies:
   - name: redis
     version: 17.10.1
     repository: https://charts.bitnami.com/bitnami
+  - name: kafka
+    version: 22.1.2
+    repository: https://charts.bitnami.com/bitnami

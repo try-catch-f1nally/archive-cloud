@@ -1,6 +1,5 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import http from 'node:http';
 import {path7za} from '7zip-bin';
 import node7z from 'node-7z';
 import {BadRequestError, Logger} from '@try-catch-f1nally/express-microservice';
@@ -8,16 +7,19 @@ import Config from '../config/types/config.interface';
 import UploadService from './types/upload.service.interface';
 import {UploadingStatus, UploadOptions} from './types/upload.types';
 import {RedisClient} from '../redis';
+import {KafkaProducer} from '../kafka';
 
 export default class UploadServiceImpl implements UploadService {
   private _config: Config;
   private _logger: Logger;
   private _redisClient: RedisClient;
+  private _kafkaProducer: KafkaProducer;
 
-  constructor(config: Config, logger: Logger, redisClient: RedisClient) {
+  constructor(config: Config, logger: Logger, redisClient: RedisClient, kafkaProducer: KafkaProducer) {
     this._config = config;
     this._logger = logger;
     this._redisClient = redisClient;
+    this._kafkaProducer = kafkaProducer;
   }
 
   getUserUploadDir(userId: string) {
@@ -96,20 +98,10 @@ export default class UploadServiceImpl implements UploadService {
     }
   }
 
-  // TODO: replace http request with rabbitmq event
   _notifyStorageApiService(userId: string, name: string) {
-    const data = JSON.stringify({userId, name});
-    const req = http.request(`${this._config['storage-api'].url}/archives`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': data.length
-      }
-    });
-    return new Promise((resolve, reject) => {
-      req.on('error', reject).on('close', resolve);
-      req.write(data);
-      req.end();
+    return this._kafkaProducer.send({
+      topic: 'storage',
+      messages: [{value: JSON.stringify({userId, name})}]
     });
   }
 

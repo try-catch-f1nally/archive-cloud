@@ -1,10 +1,10 @@
 import * as ioredis from 'ioredis';
-import {Database, Logger} from '@try-catch-f1nally/express-microservice';
+import {Connectable, Logger} from '@try-catch-f1nally/express-microservice';
 import Config from './config/types/config.interface';
 
 export interface RedisClient extends ioredis.Redis {}
 
-export default class RedisDb implements Database {
+export default class RedisDb implements Connectable {
   private _client: ioredis.Redis;
   private _config: Config;
   private _logger: Logger;
@@ -25,7 +25,7 @@ export default class RedisDb implements Database {
     this._logger.info('Successfully connected to Redis');
   }
 
-  async close() {
+  async disconnect() {
     this._logger.info('Disconnecting from Redis...');
     await this._client.quit();
     this._logger.info('Successfully disconnected from Redis');

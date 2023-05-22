@@ -24,10 +24,12 @@ module.exports = {
   rules: {
     'no-empty': ['off'],
     'sonarjs/no-ignored-return': ['off'],
+    '@typescript-eslint/no-empty-interface': ['error', {allowSingleExtends: true}],
     '@typescript-eslint/no-misused-promises': ['error', {checksVoidReturn: false}],
     '@typescript-eslint/no-explicit-any': ['off'],
     '@typescript-eslint/no-non-null-assertion': ['off'],
     '@typescript-eslint/no-unsafe-call': ['off'],
+    '@typescript-eslint/no-unsafe-argument': ['off'],
     '@typescript-eslint/no-unsafe-assignment': ['off'],
     '@typescript-eslint/no-unsafe-member-access': ['off']
   }

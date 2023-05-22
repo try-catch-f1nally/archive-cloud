@@ -7,6 +7,8 @@ const envVars = processEnvValidator<EnvVars>({
     PORT: {type: 'integer', default: 3000},
     MONGODB_HOST: {type: 'string', format: 'hostname'},
     MONGODB_PORT: {type: 'integer', default: 27017},
+    KAFKA_HOST: {type: 'string', format: 'hostname'},
+    KAFKA_PORT: {type: 'integer', default: 9092},
     AUTH_PUBLIC_KEY: {type: 'string'},
     FRONTEND_ORIGIN: {type: 'string'}
   },
@@ -17,6 +19,12 @@ export const config: Config = {
   port: envVars.PORT,
   mongodb: {
     uri: `mongodb://${envVars.MONGODB_HOST}:${envVars.MONGODB_PORT}/storage-api`
+  },
+  kafka: {
+    connectionOptions: {
+      clientId: 'storage-api',
+      brokers: [`${envVars.KAFKA_HOST}:${envVars.KAFKA_PORT}`]
+    }
   },
   auth: {
     publicKey: envVars.AUTH_PUBLIC_KEY
