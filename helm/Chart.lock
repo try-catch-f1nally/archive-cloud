@@ -8,5 +8,14 @@ dependencies:
 - name: kafka
   repository: https://charts.bitnami.com/bitnami
   version: 22.1.2
-digest: sha256:7ed8f0d73c64eddbde3ff2dc95e3e2fb6b64a1a0f706306c400c7f0ef7cf1920
-generated: "2023-05-21T13:19:46.8720932+03:00"
+- name: logstash
+  repository: https://helm.elastic.co
+  version: 8.5.1
+- name: elasticsearch
+  repository: https://helm.elastic.co
+  version: 8.5.1
+- name: kibana
+  repository: https://helm.elastic.co
+  version: 8.5.1
+digest: sha256:c1d276a0a4b4139538fd9cdab929a3fb55c5fa9c01d69e09c26263b6c56ee81b
+generated: "2023-05-26T19:15:50.8394068+03:00"

@@ -27,6 +27,10 @@ spec:
               value: {{ .Values.configs.REDIS_HOST }}
             - name: REDIS_PORT
               value: {{ .Values.configs.REDIS_PORT | quote }}
+            - name: LOGSTASH_HOST
+              value: {{ .Values.configs.LOGSTASH_HOST }}
+            - name: LOGSTASH_PORT
+              value: {{ .Values.configs.LOGSTASH_PORT | quote }}
             - name: KAFKA_HOST
               value: {{ .Values.configs.KAFKA_HOST }}
             - name: KAFKA_PORT

@@ -5,7 +5,7 @@ selector:
 
 image:
   name: trycatchf1nally/archive-cloud-storage-api
-  tag: 1.0.1
+  tag: 1.0.2
 
 service:
   port: 80
@@ -24,6 +24,8 @@ archivesVolume: 10Gi
 configs:
   MONGODB_HOST: archive-cloud-mongodb
   MONGODB_PORT: 27017
+  LOGSTASH_HOST: archive-cloud-logstash
+  LOGSTASH_PORT: 8080
   KAFKA_HOST: archive-cloud-kafka
   KAFKA_PORT: 9092
   FRONTEND_ORIGIN: http://localhost

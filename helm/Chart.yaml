@@ -12,3 +12,12 @@ dependencies:
   - name: kafka
     version: 22.1.2
     repository: https://charts.bitnami.com/bitnami
+  - name: logstash
+    version: 8.5.1
+    repository: https://helm.elastic.co
+  - name: elasticsearch
+    version: 8.5.1
+    repository: https://helm.elastic.co
+  - name: kibana
+    version: 8.5.1
+    repository: https://helm.elastic.co

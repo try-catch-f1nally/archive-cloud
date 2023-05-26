@@ -1,0 +1,27 @@
+replicaCount: 1
+
+selector:
+  app: archive-cloud-logstash
+
+image:
+  name: docker.elastic.co/logstash/logstash
+  tag: 8.7.1
+
+service:
+  port: 8080
+  targetPort: 8080
+
+configmap:
+  logstashConf: |-
+    input {
+      http {
+        host => "0.0.0.0"
+        port => "8080"
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => ["archive-cloud-elasticsearch:9200"]
+        index => "logs"
+      }
+    }

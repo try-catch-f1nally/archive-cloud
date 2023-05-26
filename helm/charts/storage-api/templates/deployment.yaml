@@ -25,6 +25,10 @@ spec:
               value: {{ .Values.configs.MONGODB_HOST }}
             - name: MONGODB_PORT
               value: {{ .Values.configs.MONGODB_PORT | quote }}
+            - name: LOGSTASH_HOST
+              value: {{ .Values.configs.LOGSTASH_HOST }}
+            - name: LOGSTASH_PORT
+              value: {{ .Values.configs.LOGSTASH_PORT | quote }}
       containers:
         - name: storage-api
           image: {{ .Values.image.name }}:{{ .Values.image.tag }}

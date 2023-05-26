@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{ .Values.selector | toYaml }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ .Values.selector | toYaml }}
+  template:
+    metadata:
+      labels:
+        {{ .Values.selector | toYaml }}
+    spec:
+      containers:
+        - name: logstash
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          command: ["/bin/sh"]
+          args: ["-c", "logstash -f /usr/share/logstash/config/logstash.conf"]
+          volumeMounts:
+            - mountPath: /usr/share/logstash/config/logstash.conf
+              subPath: logstash.conf
+              name: logstash-conf
+      volumes:
+        - name: logstash-conf
+          configMap:
+            name: {{ .Release.Name }}-logstash-conf
+            items:
+              - key: logstash.conf
+                path: logstash.conf

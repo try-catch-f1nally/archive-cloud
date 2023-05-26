@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{ .Values.selector | toYaml }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ .Values.selector | toYaml }}
+  template:
+    metadata:
+      labels:
+        {{ .Values.selector | toYaml }}
+    spec:
+      containers:
+        - name: elasticsearch
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          env:
+            - name: "discovery.type"
+              value: "single-node"
+            - name: "xpack.security.enabled"
+              value: "false"
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data/
+              name: elasticsearch-data
+      volumes:
+        - name: elasticsearch-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-elasticsearch-data

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{ .Values.selector | toYaml }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ .Values.selector | toYaml }}
+  template:
+    metadata:
+      labels:
+        {{ .Values.selector | toYaml }}
+    spec:
+      containers:
+        - name: kibana-data
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: '["http://archive-cloud-elasticsearch:9200"]'
+          volumeMounts:
+            - mountPath: /usr/share/kibana/data
+              name: kibana-data
+      volumes:
+        - name: kibana-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-kibana-data

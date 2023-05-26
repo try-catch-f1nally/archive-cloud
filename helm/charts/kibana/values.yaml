@@ -1,0 +1,17 @@
+replicaCount: 1
+
+selector:
+  app: archive-cloud-kibana
+
+image:
+  name: docker.elastic.co/kibana/kibana
+  tag: 8.7.1
+
+service:
+  port: 5601
+  targetPort: 5601
+
+ingress:
+  path: /kibana
+
+storageVolume: 1Gi

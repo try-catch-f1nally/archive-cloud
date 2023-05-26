@@ -1,0 +1,14 @@
+replicaCount: 1
+
+selector:
+  app: archive-cloud-elasticsearch
+
+image:
+  name: docker.elastic.co/elasticsearch/elasticsearch
+  tag: 8.7.1
+
+service:
+  port: 9200
+  targetPort: 9200
+
+storageVolume: 3Gi
