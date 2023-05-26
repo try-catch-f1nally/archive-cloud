@@ -15,11 +15,20 @@ spec:
     spec:
       containers:
         - name: static-server
-          image: trycatchf1nally/archive-cloud-static-server:1.0.0
+          image: nginx:1.24.0
           volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              name: nginx-conf
             - mountPath: /var/www/static/archives
               name: archives-data
       volumes:
+        - name: nginx-conf
+          configMap:
+            name: static-server-nginx-conf
+            items:
+              - key: nginx.conf
+                path: nginx.conf
         - name: archives-data
           persistentVolumeClaim:
             claimName: archives-volume-claim

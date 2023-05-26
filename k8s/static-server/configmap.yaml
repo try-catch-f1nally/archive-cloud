@@ -1,34 +1,22 @@
-replicaCount: 1
-
-selector:
-  app: archive-cloud-static-server
-
-image:
-  name: nginx
-  tag: 1.24.0
-
-service:
-  port: 80
-  targetPort: 80
-
-ingress:
-  path: /static-server
-
-configmap:
-  nginxConf: |
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: static-server-nginx-conf
+data:
+  nginx.conf: |
     events {
       worker_connections 1024;
     }
-
+  
     http {
       include /etc/nginx/mime.types;
       default_type  application/octet-stream;
       sendfile on;
-
+  
       server {
         listen 80;
         listen [::]:80 default ipv6only=on;
-
+      
         root /var/www/static/;
       }
     }
