@@ -17,7 +17,7 @@ services:
       - ../services/client:/usr/src/app
       - /usr/src/app/node_modules
     networks:
-      - client-reverse-proxy
+      - application
 
   auth-api:
     image: node:18-alpine
@@ -33,8 +33,7 @@ services:
       - ../services/auth-api:/usr/src/app
       - /usr/src/app/node_modules
     networks:
-      - auth-api-reverse-proxy
-      - auth-api-mongodb
+      - application
     depends_on:
       - mongodb
 
@@ -55,10 +54,7 @@ services:
       - uploads:/usr/src/app/uploads
       - archives:/usr/src/app/archives
     networks:
-      - upload-api-reverse-proxy
-      - upload-api-storage-api
-      - upload-api-redis
-      - upload-api-kafka
+      - application
     depends_on:
       - redis
       - kafka
@@ -77,10 +73,7 @@ services:
       - /usr/src/app/node_modules
       - archives:/usr/src/app/archives
     networks:
-      - storage-api-reverse-proxy
-      - upload-api-storage-api
-      - storage-api-mongodb
-      - storage-api-kafka
+      - application
     depends_on:
       - mongodb
       - storage-api-mongodb-migration
@@ -91,21 +84,17 @@ services:
     ports:
       - "3000:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf
     networks:
-      - client-reverse-proxy
-      - auth-api-reverse-proxy
-      - upload-api-reverse-proxy
-      - storage-api-reverse-proxy
-      - static-server-reverse-proxy
+      - application
 
   static-server:
     image: nginx:1.24.0
     volumes:
-      - ../services/static-server/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../services/static-server/nginx.conf:/etc/nginx/nginx.conf
       - archives:/var/www/static/archives/
     networks:
-      - static-server-reverse-proxy
+      - application
 
   storage-api-mongodb-migration:
     image: node:18-alpine
@@ -118,7 +107,7 @@ services:
       - ../services/storage-api/migrate-mongo:/app
       - /app/node_modules
     networks:
-      - storage-api-mongodb-migration-mongodb
+      - application
     depends_on:
       - mongodb
 
@@ -130,16 +119,14 @@ services:
     volumes:
       - mongodb-data:/data/db
     networks:
-      - auth-api-mongodb
-      - storage-api-mongodb
-      - storage-api-mongodb-migration-mongodb
+      - application
 
   redis:
     image: redis:7
     volumes:
       - redis-data:/data
     networks:
-      - upload-api-redis
+      - application
 
   zookeeper:
     image: bitnami/zookeeper:3
@@ -148,7 +135,7 @@ services:
     volumes:
       - zookeeper-data:/bitnami/zookeeper
     networks:
-      - zookeeper-kafka
+      - application
 
   kafka:
     image: bitnami/kafka:3
@@ -159,9 +146,7 @@ services:
     volumes:
       - kafka-data:/bitnami/kafka
     networks:
-      - zookeeper-kafka
-      - storage-api-kafka
-      - upload-api-kafka
+      - application
     depends_on:
       - zookeeper
 
@@ -174,16 +159,4 @@ volumes:
   kafka-data:
 
 networks:
-  client-reverse-proxy:
-  auth-api-reverse-proxy:
-  upload-api-reverse-proxy:
-  storage-api-reverse-proxy:
-  static-server-reverse-proxy:
-  upload-api-storage-api:
-  auth-api-mongodb:
-  storage-api-mongodb:
-  storage-api-mongodb-migration-mongodb:
-  upload-api-redis:
-  zookeeper-kafka:
-  storage-api-kafka:
-  upload-api-kafka:
+  application:
