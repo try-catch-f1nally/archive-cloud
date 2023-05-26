@@ -46,6 +46,7 @@
     "typescript": "~4.9.4"
   },
   "dependencies": {
+    "@log4js-node/logstash-http": "~1.1.0",
     "@try-catch-f1nally/express-microservice": "~2.1.0",
     "kafkajs": "~2.2.4",
     "mongoose": "~7.0.2"

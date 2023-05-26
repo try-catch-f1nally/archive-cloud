@@ -7,6 +7,8 @@ const envVars = processEnvValidator<EnvVars>({
     PORT: {type: 'integer', default: 3000},
     MONGODB_HOST: {type: 'string', format: 'hostname'},
     MONGODB_PORT: {type: 'integer', default: 27017},
+    LOGSTASH_HOST: {type: 'string', format: 'hostname'},
+    LOGSTASH_PORT: {type: 'integer', default: 8080},
     AUTH_PUBLIC_KEY: {type: 'string'},
     AUTH_PRIVATE_KEY: {type: 'string'},
     JWT_SECRET: {type: 'string'},
@@ -30,5 +32,23 @@ export const config: Config = {
   cors: {
     origin: envVars.FRONTEND_ORIGIN,
     credentials: true
+  },
+  log4js: {
+    appenders: {
+      all: {
+        type: 'stdout'
+      },
+      logstash: {
+        type: '@log4js-node/logstash-http',
+        url: `http://${envVars.LOGSTASH_HOST}:${envVars.LOGSTASH_PORT}/_bulk`,
+        application: 'auth-api'
+      }
+    },
+    categories: {
+      default: {
+        appenders: ['all', 'logstash'],
+        level: 'all'
+      }
+    }
   }
 };

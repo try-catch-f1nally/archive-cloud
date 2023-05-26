@@ -10,6 +10,8 @@ const envVars = processEnvValidator<EnvVars>({
     STORAGE_API_ORIGIN: {type: 'string'},
     REDIS_HOST: {type: 'string', format: 'hostname'},
     REDIS_PORT: {type: 'integer', default: 6379},
+    LOGSTASH_HOST: {type: 'string', format: 'hostname'},
+    LOGSTASH_PORT: {type: 'integer', default: 8080},
     KAFKA_HOST: {type: 'string', format: 'hostname'},
     KAFKA_PORT: {type: 'integer', default: 9092}
   },
@@ -46,5 +48,23 @@ export const config: Config = {
   cors: {
     origin: envVars.FRONTEND_ORIGIN,
     credentials: true
+  },
+  log4js: {
+    appenders: {
+      all: {
+        type: 'stdout'
+      },
+      logstash: {
+        type: '@log4js-node/logstash-http',
+        url: `http://${envVars.LOGSTASH_HOST}:${envVars.LOGSTASH_PORT}/_bulk`,
+        application: 'upload-api'
+      }
+    },
+    categories: {
+      default: {
+        appenders: ['all', 'logstash'],
+        level: 'all'
+      }
+    }
   }
 };

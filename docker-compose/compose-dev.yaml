@@ -25,6 +25,7 @@ services:
     command: sh -c "npm i && npm run dev"
     environment:
       MONGODB_HOST: mongodb
+      LOGSTASH_HOST: logstash
       FRONTEND_ORIGIN: http://localhost:8080
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
       AUTH_PRIVATE_KEY: ${AUTH_PRIVATE_KEY}
@@ -36,6 +37,7 @@ services:
       - application
     depends_on:
       - mongodb
+      - logstash
 
   upload-api:
     image: node:18-alpine
@@ -44,6 +46,7 @@ services:
     environment:
       REDIS_HOST: redis
       KAFKA_HOST: kafka
+      LOGSTASH_HOST: logstash
       FRONTEND_ORIGIN: http://localhost:8080
       STORAGE_API_ORIGIN: http://storage-api:3000
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
@@ -58,6 +61,7 @@ services:
     depends_on:
       - redis
       - kafka
+      - logstash
 
   storage-api:
     image: node:18-alpine
@@ -66,6 +70,7 @@ services:
     environment:
       MONGODB_HOST: mongodb
       KAFKA_HOST: kafka
+      LOGSTASH_HOST: logstash
       FRONTEND_ORIGIN: http://localhost:8080
       AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
     volumes:
@@ -78,6 +83,7 @@ services:
       - mongodb
       - storage-api-mongodb-migration
       - kafka
+      - logstash
 
   reverse-proxy:
     image: nginx:1.24.0
@@ -150,6 +156,37 @@ services:
     depends_on:
       - zookeeper
 
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.7.1
+    command: sh -c "logstash -f /usr/share/logstash/config/logstash.conf"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/config/logstash.conf
+    networks:
+      - application
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data/
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: false
+    networks:
+      - application
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.7.1
+    volumes:
+      - kibana-data:/usr/share/kibana/data
+    ports:
+      - "5601:5601"
+    networks:
+      - application
+    depends_on:
+      - elasticsearch
+
 volumes:
   archives:
   uploads:
@@ -157,6 +194,8 @@ volumes:
   redis-data:
   zookeeper-data:
   kafka-data:
+  elasticsearch-data:
+  kibana-data:
 
 networks:
   application:

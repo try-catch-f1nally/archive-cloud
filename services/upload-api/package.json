@@ -48,6 +48,7 @@
     "typescript": "~4.9.4"
   },
   "dependencies": {
+    "@log4js-node/logstash-http": "~1.1.0",
     "@try-catch-f1nally/express-microservice": "~2.0.0",
     "7zip-bin": "~5.2.0",
     "ioredis": "~5.3.1",

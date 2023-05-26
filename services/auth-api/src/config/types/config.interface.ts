@@ -24,6 +24,8 @@ export interface EnvVars {
   PORT: number;
   MONGODB_HOST: string;
   MONGODB_PORT: number;
+  LOGSTASH_HOST: string;
+  LOGSTASH_PORT: number;
   AUTH_PUBLIC_KEY: string;
   AUTH_PRIVATE_KEY: string;
   JWT_SECRET: string;

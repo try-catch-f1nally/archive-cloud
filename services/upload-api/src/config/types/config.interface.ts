@@ -33,6 +33,8 @@ export interface EnvVars {
   STORAGE_API_ORIGIN: string;
   REDIS_HOST: string;
   REDIS_PORT: number;
+  LOGSTASH_HOST: string;
+  LOGSTASH_PORT: number;
   KAFKA_HOST: string;
   KAFKA_PORT: number;
 }
